@@ -6,113 +6,98 @@
 #                            By: ozmerte <ozmerte@gmail.com>          #
 #                                                   +#+  +:+       +#+         #
 #                            Created: 2026/05/01 01:52:00 by ozmerte        #
-#                            Updated: 2026/05/01 01:52:00 by ozmerte       #
+#                            Updated: 2026/05/01 02:00:00 by ozmerte       #
 #                                                                              #
 # **************************************************************************** #
 
 # ============================================================================
-# PROJECT CONFIGURATION
+# VARIABLES CONFIGURATION (École 42 Standard)
 # ============================================================================
 
-# Project Name
-NAME			=	Dr_Quine
+CC			=	gcc
+CFLAGS		=	-Wall -Wextra -Werror -g -I$(HDRDIR)
+LDFLAGS		=	-lm
 
-# Compiler and Flags
-CC				=	gcc
-CFLAGS			=	-Wall -Wextra -Werror -g
-CPPFLAGS		=	-Ihdr
+SRCDIR		=	src
+HDRDIR		=	hdr
+OBJDIR		=	obj
+OUTDIR		=	output
+TESTDIR		=	tests
 
-# Directories
-SRC_DIR			=	src
-HDR_DIR			=	hdr
-OBJ_DIR			=	obj
-OUTPUT_DIR		=	output
-TEST_DIR		=	tests
+# Source Files - C Programs (Quine implementations)
+COLLEEN_C	=	$(SRCDIR)/colleen.c
+GRACE_C		=	$(SRCDIR)/grace.c
+SULLY_C		=	$(SRCDIR)/sully.c
 
-# Source Files (will be populated as project grows)
-COLLEEN_C		=	$(SRC_DIR)/colleen.c
-GRACE_C			=	$(SRC_DIR)/grace.c
-SULLY_C			=	$(SRC_DIR)/sully.c
+# All source files for compilation
+SRCS		=	$(COLLEEN_C) \
+				$(GRACE_C) \
+				$(SULLY_C)
 
 # Object Files
-COLLEEN_O		=	$(OBJ_DIR)/colleen.o
-GRACE_O			=	$(OBJ_DIR)/grace.o
-SULLY_O			=	$(OBJ_DIR)/sully.o
+OBJS		=	$(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCS))
 
-# Executables (C versions)
-COLLEEN_BIN		=	Colleen
-GRACE_BIN		=	Grace
-SULLY_BIN		=	Sully
+# Executables (C versions with capital first letter per spec)
+COLLEEN		=	Colleen
+GRACE		=	Grace
+SULLY		=	Sully
 
-# ============================================================================
-# COLORS FOR OUTPUT
-# ============================================================================
-
-RED				=	\033[0;31m
-GREEN			=	\033[0;32m
-YELLOW			=	\033[0;33m
-BLUE			=	\033[0;34m
-NC				=	\033[0m
+# All binaries
+BINARIES	=	$(COLLEEN) $(GRACE) $(SULLY)
 
 # ============================================================================
-# PHONY TARGETS
+# PHONY TARGETS (École 42 Required)
 # ============================================================================
 
-.PHONY: all clean fclean re help info
+.PHONY: all clean fclean re help test norm cppcheck show
 
 # ============================================================================
 # DEFAULT TARGET
 # ============================================================================
 
-all: info $(COLLEEN_BIN) $(GRACE_BIN) $(SULLY_BIN)
-	@echo "$(GREEN)[✓] $(NAME) - All targets built successfully$(NC)"
+all: $(BINARIES)
 
 # ============================================================================
-# COLLEEN TARGET
+# EXECUTABLE COMPILATION RULES (No Relink)
 # ============================================================================
 
-$(COLLEEN_BIN): $(COLLEEN_O)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $^
-	@echo "$(GREEN)[✓] Built: $(COLLEEN_BIN)$(NC)"
+$(COLLEEN): $(OBJDIR)/colleen.o | $(OUTDIR)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-# ============================================================================
-# GRACE TARGET
-# ============================================================================
+$(GRACE): $(OBJDIR)/grace.o | $(OUTDIR)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(GRACE_BIN): $(GRACE_O)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $^
-	@echo "$(GREEN)[✓] Built: $(GRACE_BIN)$(NC)"
-
-# ============================================================================
-# SULLY TARGET
-# ============================================================================
-
-$(SULLY_BIN): $(SULLY_O)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $^
-	@echo "$(GREEN)[✓] Built: $(SULLY_BIN)$(NC)"
+$(SULLY): $(OBJDIR)/sully.o | $(OUTDIR)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # ============================================================================
 # OBJECT FILE COMPILATION RULE
 # ============================================================================
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
-	@echo "$(BLUE)[•] Compiled: $<$(NC)"
+$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # ============================================================================
-# CLEAN TARGETS
+# DIRECTORY CREATION RULES (Order-only dependencies)
+# ============================================================================
+
+$(OBJDIR):
+	@mkdir -p $(OBJDIR)
+
+$(OUTDIR):
+	@mkdir -p $(OUTDIR)
+
+# ============================================================================
+# CLEAN TARGETS (École 42 Required)
 # ============================================================================
 
 clean:
-	@rm -rf $(OBJ_DIR)
-	@echo "$(YELLOW)[✓] Cleaned: Object files removed$(NC)"
+	rm -rf $(OBJDIR)
 
 fclean: clean
-	@rm -f $(COLLEEN_BIN) $(GRACE_BIN) $(SULLY_BIN)
-	@rm -f *_kid.c *_kid.s
-	@rm -f $(OUTPUT_DIR)/*
-	@echo "$(YELLOW)[✓] FCleaned: Executables and output removed$(NC)"
+	rm -f $(BINARIES)
+	rm -f *_kid.c *_kid.s
+	rm -rf $(OUTDIR)
 
 re: fclean all
 
@@ -121,88 +106,67 @@ re: fclean all
 # ============================================================================
 
 help:
-	@echo "$(BLUE)=== Dr_Quine Makefile Help ===$(NC)"
+	@echo "Dr_Quine - Self-Replicating Quine Programs"
 	@echo ""
-	@echo "$(GREEN)Available Targets:$(NC)"
-	@echo "  $(YELLOW)make all$(NC)      - Build all Quine programs (Colleen, Grace, Sully)"
-	@echo "  $(YELLOW)make clean$(NC)    - Remove object files"
-	@echo "  $(YELLOW)make fclean$(NC)   - Remove object files and executables"
-	@echo "  $(YELLOW)make re$(NC)       - Rebuild everything (fclean + all)"
-	@echo "  $(YELLOW)make help$(NC)     - Show this help message"
-	@echo "  $(YELLOW)make info$(NC)     - Show project information"
-	@echo "  $(YELLOW)make test$(NC)     - Run tests (placeholder)"
-	@echo ""
-	@echo "$(GREEN)Example Usage:$(NC)"
-	@echo "  $$ make              # Build all programs"
-	@echo "  $$ ./Colleen         # Run Colleen program"
-	@echo "  ./Colleen > out.c && diff out.c <source.c>"
-	@echo "  $$ make clean        # Remove build artifacts"
-	@echo ""
+	@echo "Available targets:"
+	@echo "  make all     - Build all quine programs (Colleen, Grace, Sully)"
+	@echo "  make clean   - Remove object files"
+	@echo "  make fclean  - Remove object files and executables"
+	@echo "  make re      - Rebuild (fclean + all)"
+	@echo "  make help    - Show this help"
+	@echo "  make norm    - Check norm compliance"
+	@echo "  make cppcheck - Run static analysis"
+	@echo "  make test    - Run test suite"
+	@echo "  make show    - Show source files status"
 
 # ============================================================================
-# INFO TARGET
+# TEST TARGET
 # ============================================================================
 
-info:
-	@echo "$(BLUE)"
-	@echo " ╔════════════════════════════════════════════════════════╗"
-	@echo " ║           Dr_Quine - Self-Replicating Programs         ║"
-	@echo " ║                  Makefile v1.0                         ║"
-	@echo " ╚════════════════════════════════════════════════════════╝"
-	@echo "$(NC)"
-	@echo "$(GREEN)Project Structure:$(NC)"
-	@echo "  Source Dir:       $(SRC_DIR)/"
-	@echo "  Header Dir:       $(HDR_DIR)/"
-	@echo "  Object Dir:       $(OBJ_DIR)/"
-	@echo "  Output Dir:       $(OUTPUT_DIR)/"
-	@echo "  Test Dir:         $(TEST_DIR)/"
-	@echo ""
-	@echo "$(GREEN)Compiler Settings:$(NC)"
-	@echo "  Compiler:         $(CC)"
-	@echo "  Flags:            $(CFLAGS)"
-	@echo "  Includes:         $(CPPFLAGS)"
-	@echo ""
-	@echo "$(GREEN)Programs:$(NC)"
-	@echo "  1. Colleen (stdout quine)"
-	@echo "  2. Grace   (file writing quine)"
-	@echo "  3. Sully   (parametric self-replicating quine)"
-	@echo ""
-	@echo "$(YELLOW)Run 'make help' for usage information$(NC)"
-	@echo ""
+test: $(BINARIES)
+	@echo "Testing Colleen..."
+	@./$(COLLEEN) > /tmp/colleen_out.c && diff /tmp/colleen_out.c $(COLLEEN_C) && echo "✓ Colleen OK" || echo "✗ Colleen FAIL"
+	@echo "Testing Grace..."
+	@./$(GRACE) && diff $(GRACE_C) Grace_kid.c && echo "✓ Grace OK" || echo "✗ Grace FAIL"
+	@echo "Testing Sully (first iteration)..."
+	@./$(SULLY) && test -f Sully_7.c && echo "✓ Sully OK" || echo "✗ Sully FAIL"
 
 # ============================================================================
-# TEST TARGET (Placeholder - expand as needed)
+# NORM COMPLIANCE TARGET
 # ============================================================================
 
-test:
-	@echo "$(BLUE)[•] Running tests...$(NC)"
-	@echo "$(YELLOW)[!] Test suite not yet implemented$(NC)"
-	@echo "$(YELLOW)[!] See $(TEST_DIR)/ for test structure$(NC)"
-
-# ============================================================================
-# ADDITIONAL TARGETS
-# ============================================================================
-
-# Show what will be compiled
-show:
-	@echo "$(GREEN)Files to compile:$(NC)"
-	@test -f $(COLLEEN_C) && echo "  ✓ $(COLLEEN_C)" || echo "  ✗ $(COLLEEN_C) (missing)"
-	@test -f $(GRACE_C) && echo "  ✓ $(GRACE_C)" || echo "  ✗ $(GRACE_C) (missing)"
-	@test -f $(SULLY_C) && echo "  ✓ $(SULLY_C)" || echo "  ✗ $(SULLY_C) (missing)"
-
-# Verify norm compliance (requires norminette installed)
 norm:
-	@echo "$(BLUE)[•] Checking norm compliance...$(NC)"
-	@command -v norminette >/dev/null 2>&1 || { echo "$(RED)✗ norminette not found$(NC)"; exit 1; }
-	@norminette $(SRC_DIR)/*.c $(HDR_DIR)/*.h 2>/dev/null || true
-	@echo "$(GREEN)[✓] Norm check complete$(NC)"
+	@echo "Checking École 42 norm compliance..."
+	@command -v norminette >/dev/null 2>&1 || { echo "norminette not found"; exit 1; }
+	@norminette -R CheckForbiddenSourceHeader $(SRCS) $(HDRDIR)/*.h 2>&1 || true
+	@echo "Norm check complete"
 
-# Static analysis with cppcheck (requires cppcheck installed)
-check:
-	@echo "$(BLUE)[•] Running static analysis...$(NC)"
-	@command -v cppcheck >/dev/null 2>&1 || { echo "$(RED)✗ cppcheck not found$(NC)"; exit 1; }
-	@cppcheck --enable=all --inconclusive $(SRC_DIR)/ $(HDR_DIR)/
-	@echo "$(GREEN)[✓] Analysis complete$(NC)"
+# ============================================================================
+# STATIC ANALYSIS TARGET
+# ============================================================================
+
+cppcheck:
+	@echo "Running cppcheck static analysis..."
+	@command -v cppcheck >/dev/null 2>&1 || { echo "cppcheck not found"; exit 1; }
+	@cppcheck --enable=all --inconclusive --std=c11 --force \
+		--suppress=missingIncludeSystem \
+		--suppress=unusedFunction \
+		-I $(HDRDIR) --quiet $(SRCS) 2>&1
+	@echo "Cppcheck complete"
+
+# ============================================================================
+# SHOW SOURCE FILES STATUS
+# ============================================================================
+
+show:
+	@echo "Source files status:"
+	@for file in $(SRCS); do \
+		if [ -f $$file ]; then \
+			echo "  ✓ $$file"; \
+		else \
+			echo "  ✗ $$file (missing)"; \
+		fi; \
+	done
 
 # ============================================================================
 # END OF MAKEFILE
