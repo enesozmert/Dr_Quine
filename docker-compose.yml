@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  dr-quine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dr_quine
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/obj
+      - /app/output
+    environment:
+      - CC=gcc
+      - CFLAGS=-Wall -Wextra -Werror -std=c11 -O2
+    command: /bin/bash
+    stdin_open: true
+    tty: true
+
+  # Development environment with extra tools
+  dr-quine-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dr_quine_dev
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/obj
+      - /app/output
+    environment:
+      - CC=gcc
+      - CFLAGS=-Wall -Wextra -Werror -std=c11 -g -O0
+    command: /bin/bash
+    stdin_open: true
+    tty: true
+    profiles:
+      - dev

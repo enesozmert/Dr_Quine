@@ -1,0 +1,61 @@
+# Build artifacts
+obj/
+build/
+*.o
+*.a
+*.so
+*.exe
+*.out
+
+# Compiled programs
+Colleen
+Grace
+Sully
+colleen
+grace
+sully
+
+# Generated quine output files
+Grace_kid.*
+Sully_*.c
+Sully_*.s
+colleen_out.*
+test_*.c
+test_*.s
+test_*.txt
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*.egg-info/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.env
+.env.local
+
+# CMake
+CMakeUserPresets.json
+
+# VS Code
+.vscode/
+launch.json
+
+# Cppcheck
+cppcheck-report.txt
+
+# Test outputs
+*.tmp
+test_output/
+
+# OS-specific
+Thumbs.db
+.directory

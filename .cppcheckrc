@@ -1,0 +1,38 @@
+# Cppcheck Configuration File for Dr_Quine
+# This file configures cppcheck to run MISRA C:2012 analysis with appropriate suppressions
+
+[Cppcheck]
+# Enable checks
+enable=all
+
+# Inconclusive checks
+inconclusive=true
+
+# C Standard
+std=c11
+
+# Force check of all files
+force=true
+
+# Include paths
+includes=hdr
+
+# Suppressions for false positives
+suppress=missingIncludeSystem
+suppress=unusedFunction
+suppress=constVariablePointer
+suppress=wrongPrintfScanfArgNum
+suppress=knownConditionTrueFalse
+
+# MISRA C:2012 checks
+# Uncomment to enable specific MISRA rules
+# misra-c-2012=true
+
+# Output format
+output-file=cppcheck-report.txt
+
+# Inline suppressions allowed
+inline-suppressions=true
+
+# Maximum template instantiations
+max-template-recursion=100
