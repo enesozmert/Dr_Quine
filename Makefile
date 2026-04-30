@@ -11,6 +11,16 @@
 # **************************************************************************** #
 
 # ============================================================================
+# COLORS FOR OUTPUT
+# ============================================================================
+
+RED			=	\033[0;31m
+GREEN		=	\033[0;32m
+YELLOW		=	\033[0;33m
+BLUE		=	\033[0;34m
+NC			=	\033[0m
+
+# ============================================================================
 # VARIABLES CONFIGURATION (École 42 Standard)
 # ============================================================================
 
@@ -42,8 +52,13 @@ COLLEEN		=	Colleen
 GRACE		=	Grace
 SULLY		=	Sully
 
+# Assembly executables (lowercase per convention)
+COLLEEN_ASM	=	colleen
+GRACE_ASM	=	grace
+SULLY_ASM	=	sully
+
 # All binaries
-BINARIES	=	$(COLLEEN) $(GRACE) $(SULLY)
+BINARIES	=	$(COLLEEN) $(GRACE) $(SULLY) $(COLLEEN_ASM) $(GRACE_ASM) $(SULLY_ASM)
 
 # ============================================================================
 # PHONY TARGETS (École 42 Required)
@@ -71,11 +86,33 @@ $(SULLY): $(OBJDIR)/sully.o | $(OUTDIR)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # ============================================================================
-# OBJECT FILE COMPILATION RULE
+# ASSEMBLY EXECUTABLE COMPILATION RULES
+# ============================================================================
+
+$(COLLEEN_ASM): $(OBJDIR)/colleen.o | $(OUTDIR)
+	ld -o $@ $^
+
+$(GRACE_ASM): $(OBJDIR)/grace.o | $(OUTDIR)
+	ld -o $@ $^
+
+$(SULLY_ASM): $(OBJDIR)/sully.o | $(OUTDIR)
+	ld -lc -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o $@ $^
+
+# ============================================================================
+# OBJECT FILE COMPILATION RULES
 # ============================================================================
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR)/colleen.o: $(SRCDIR)/colleen.s | $(OBJDIR)
+	nasm -f elf64 $< -o $@
+
+$(OBJDIR)/grace.o: $(SRCDIR)/grace.s | $(OBJDIR)
+	nasm -f elf64 $< -o $@
+
+$(OBJDIR)/sully.o: $(SRCDIR)/sully.s | $(OBJDIR)
+	nasm -f elf64 $< -o $@
 
 # ============================================================================
 # DIRECTORY CREATION RULES (Order-only dependencies)
@@ -124,12 +161,41 @@ help:
 # ============================================================================
 
 test: $(BINARIES)
-	@echo "Testing Colleen..."
-	@./$(COLLEEN) > /tmp/colleen_out.c && diff /tmp/colleen_out.c $(COLLEEN_C) && echo "✓ Colleen OK" || echo "✗ Colleen FAIL"
-	@echo "Testing Grace..."
-	@./$(GRACE) && diff $(GRACE_C) Grace_kid.c && echo "✓ Grace OK" || echo "✗ Grace FAIL"
-	@echo "Testing Sully (first iteration)..."
-	@./$(SULLY) && test -f Sully_7.c && echo "✓ Sully OK" || echo "✗ Sully FAIL"
+	@echo "$(BLUE)═══════════════════════════════════════════════════════$(NC)"
+	@echo "$(BLUE)Testing Colleen (C version)...$(NC)"
+	@./$(COLLEEN) > /tmp/colleen_c_out.c && \
+		diff -q /tmp/colleen_c_out.c $(SRCDIR)/colleen.c > /dev/null && \
+		echo "$(GREEN)✓ Colleen C PASSED$(NC)" || echo "$(RED)✗ Colleen C FAILED$(NC)"
+	@echo ""
+	@echo "$(BLUE)Testing Colleen (Assembly version)...$(NC)"
+	@./$(COLLEEN_ASM) > /tmp/colleen_asm_out.s && \
+		diff -q /tmp/colleen_asm_out.s $(SRCDIR)/colleen.s > /dev/null && \
+		echo "$(GREEN)✓ Colleen ASM PASSED$(NC)" || echo "$(RED)✗ Colleen ASM FAILED$(NC)"
+	@echo ""
+	@echo "$(BLUE)Testing Grace (C version)...$(NC)"
+	@./$(GRACE) && \
+		diff -q Grace_kid.c $(SRCDIR)/grace.c > /dev/null && \
+		echo "$(GREEN)✓ Grace C PASSED$(NC)" || echo "$(RED)✗ Grace C FAILED$(NC)"
+	@rm -f Grace_kid.c
+	@echo ""
+	@echo "$(BLUE)Testing Grace (Assembly version)...$(NC)"
+	@./$(GRACE_ASM) && \
+		diff -q Grace_kid.s $(SRCDIR)/grace.s > /dev/null && \
+		echo "$(GREEN)✓ Grace ASM PASSED$(NC)" || echo "$(RED)✗ Grace ASM FAILED$(NC)"
+	@rm -f Grace_kid.s
+	@echo ""
+	@echo "$(BLUE)Testing Sully (C version)...$(NC)"
+	@./$(SULLY) && test -f Sully_7.c && \
+		echo "$(GREEN)✓ Sully C PASSED$(NC)" || echo "$(RED)✗ Sully C FAILED$(NC)"
+	@rm -f Sully_*.c
+	@echo ""
+	@echo "$(BLUE)Testing Sully (Assembly version)...$(NC)"
+	@./$(SULLY_ASM) && test -f Sully_7.s && \
+		echo "$(GREEN)✓ Sully ASM PASSED$(NC)" || echo "$(RED)✗ Sully ASM FAILED$(NC)"
+	@rm -f Sully_*.s
+	@echo ""
+	@echo "$(BLUE)═══════════════════════════════════════════════════════$(NC)"
+	@echo "$(GREEN)[✓] All tests completed!$(NC)"
 
 # ============================================================================
 # NORM COMPLIANCE TARGET
