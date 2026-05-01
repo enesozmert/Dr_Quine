@@ -15,7 +15,7 @@ This project explores the concept of quines - programs that output their own sou
 |---------|-------------|----------|--------|
 | **Colleen** | Outputs own source to stdout | C & Assembly | Standard output |
 | **Grace** | Writes own source to a file | C & Assembly | `Grace_kid.c/s` |
-| **Sully** | Self-replicating with counter | C & Assembly | `Sully_8.c/s` → `Sully_0.c/s` |
+| **Sully** | Self-replicating with counter | C & Assembly | `Sully_5.c/s` → `Sully_0.c/s` |
 
 ### Features
 
@@ -98,18 +98,28 @@ make test
 ### Run Individual Programs
 
 ```bash
+# Build C versions
+make c
+cd C
+
 # Colleen - stdout quine
 ./Colleen > colleen_output.c
-diff colleen_output.c src/colleen.c  # Should be identical
+diff colleen_output.c Colleen.c  # Should be identical
 
 # Grace - file-writing quine
 ./Grace
-diff Grace_kid.c src/grace.c  # Should be identical
+diff Grace_kid.c Grace.c  # Should be identical
 
-# Sully - recursive quine with counter
-./Sully        # Creates Sully_8.c
-cd Sully_8 && ./Sully  # Creates Sully_7.c
-# ... continues until Sully_0.c
+# Sully - recursive quine with counter (starts at 5)
+./Sully        # Creates Sully_5.c, compiles & runs it
+# ... chain continues until Sully_0.c
+
+# Build Assembly versions (Linux x86-64)
+cd ../ASM
+make
+./colleen > colleen_output.s
+./grace
+./sully
 
 # Python Bonus
 python3 bonus/quine.py           # Colleen variant
@@ -121,59 +131,83 @@ python3 bonus/quine.py sully 3   # Sully variant (counter=3)
 
 ```
 Dr_Quine/
-├── src/                    # Source code
-│   ├── colleen.c          # Colleen C implementation (65 lines)
-│   ├── colleen.s          # Colleen Assembly (73 lines)
-│   ├── grace.c            # Grace C implementation (78 lines)
-│   ├── grace.s            # Grace Assembly (107 lines)
-│   ├── sully.c            # Sully C implementation (94 lines)
-│   └── sully.s            # Sully Assembly (124 lines)
+├── C/                         # C implementations (top-level per spec)
+│   ├── Colleen.c              # Colleen C quine (stdout)
+│   ├── Grace.c                # Grace C quine (file output)
+│   ├── Sully.c                # Sully C quine (parametric, counter=5)
+│   └── Makefile               # Independent C build (École 42 standard)
+│
+├── ASM/                       # x86-64 NASM implementations (top-level)
+│   ├── Colleen.s              # Colleen Assembly quine
+│   ├── Grace.s                # Grace Assembly quine
+│   ├── Sully.s                # Sully Assembly quine
+│   └── Makefile               # Independent ASM build
+│
+├── output/                    # Build & runtime artifacts (auto-generated)
+│   ├── C/                     # Colleen, Grace, Sully binaries + Sully_*.c chain
+│   └── ASM/                   # colleen, grace, sully binaries + Sully_*.s chain
 │
 ├── bonus/
-│   ├── quine.py           # Python implementations (241 lines)
-│   └── README.md          # Python guide
+│   ├── quine.py               # Python implementations
+│   └── README.md              # Python guide
 │
 ├── docs/
-│   ├── Command.md         # Program reference
-│   ├── Presentation.md    # Quine theory and mechanics
-│   ├── Rules.md           # Project rules and standards
-│   ├── Docker.md          # Docker setup guide
-│   ├── tasks/
-│   │   └── Tasks.md       # Project status (all 10 phases completed)
-│   └── phases/            # Implementation guides (Phase 1-10)
+│   ├── main/
+│   │   ├── en.subject.pdf     # Original spec (English)
+│   │   └── tr.subject.md      # Turkish translation
+│   ├── report/
+│   │   ├── Report.md          # Project report
+│   │   └── SPEC_COMPLIANCE.md # Specification compliance tracking
+│   ├── Docker.md              # Docker setup guide
+│   ├── command/               # Command reference
+│   ├── presentation/          # Quine theory
+│   ├── rules/                 # Project standards
+│   ├── tasks/                 # Project status
+│   └── phases/                # Implementation guides
 │
-├── hdr/                   # Header files
-├── obj/                   # Object files (generated)
-├── output/                # Program outputs (generated)
-├── tests/                 # Test files
-├── scripts/               # Utility scripts
-│   ├── check_norm.sh      # Norminette checker
-│   ├── check_cppcheck.sh  # Static analysis runner
-│   └── check_all.sh       # Integrated QA suite
+├── tests/                     # Automated test suites
+│   ├── test_colleen.sh
+│   ├── test_grace.sh
+│   ├── test_sully.sh
+│   ├── test_python.sh
+│   └── test_all.sh            # Master test runner
 │
-├── Makefile               # Build system (École 42 standard)
-├── CMakeLists.txt         # CMake configuration
-├── Dockerfile             # Docker container definition
-├── docker-compose.yml     # Docker Compose orchestration
-├── .dockerignore          # Docker build exclusions
-├── .cppcheckrc            # Cppcheck configuration
-├── .gitignore             # Git exclusions
-├── README.md              # This file
-└── LICENSE                # GPL 2.0
+├── scripts/                   # Utility scripts
+│   ├── check_norm.sh
+│   ├── check_cppcheck.sh
+│   └── check_all.sh
+│
+├── Makefile                   # Root Makefile (delegates to C, ASM)
+├── CMakeLists.txt             # CMake configuration
+├── Dockerfile                 # Docker container definition
+├── docker-compose.yml         # Docker Compose orchestration
+├── .dockerignore              # Docker build exclusions
+├── .cppcheckrc                # Cppcheck configuration
+├── .gitignore                 # Git exclusions
+├── README.md                  # This file
+└── LICENSE                    # GPL 2.0
 ```
 
 ## 🔨 Building
 
 ### Using Make
 
+The root `Makefile` delegates to independent `Makefile`s in `C/` and `ASM/` (per École 42 specification).
+
 ```bash
-# Build all
+# Build all (C + ASM)
 make all
+
+# Build only C versions
+make c
+
+# Build only Assembly versions
+make asm
 
 # Clean object files only
 make clean
 
-# Full clean (remove executables too)
+# Full clean (remove executables and generated files)
 make fclean
 
 # Rebuild from scratch
@@ -181,6 +215,12 @@ make re
 
 # Run tests
 make test
+
+# Build C versions independently
+cd C && make
+
+# Build Assembly versions independently
+cd ASM && make
 ```
 
 ### Using CMake
@@ -209,14 +249,21 @@ make test
 
 ```bash
 # Test Colleen (C)
+cd C
 ./Colleen > test_out.c
-diff test_out.c src/colleen.c && echo "PASS" || echo "FAIL"
+diff test_out.c Colleen.c && echo "PASS" || echo "FAIL"
 
 # Test Grace (C)
-./Grace && diff Grace_kid.c src/grace.c && echo "PASS" || echo "FAIL"
+./Grace && diff Grace_kid.c Grace.c && echo "PASS" || echo "FAIL"
 
-# Test Sully (C) - creates 9 files
-./Sully && ls Sully_*.c | wc -l  # Should output 1
+# Test Sully (C) - creates Sully_5.c through Sully_0.c
+./Sully && ls Sully_*.c | wc -l  # Should output 6 (5,4,3,2,1,0)
+
+# Test Assembly versions
+cd ../ASM
+./colleen > test_out.s && diff test_out.s Colleen.s
+./grace && diff Grace_kid.s Grace.s
+./sully && ls Sully_*.s | wc -l
 
 # Test with Python
 python3 bonus/quine.py | wc -l
@@ -241,13 +288,13 @@ Tests: ✅ ALL PASSING
 
 ```bash
 # Norminette (École 42 norm)
-norminette src/*.c
+norminette C/*.c
 
 # Cppcheck (Static analysis)
-cppcheck --enable=all src/
+cppcheck --enable=all C/
 
 # Memory safety
-valgrind --leak-check=full ./Colleen
+valgrind --leak-check=full C/Colleen
 ```
 
 ## 🐳 Docker
@@ -285,6 +332,8 @@ For detailed Docker documentation, see [docs/Docker.md](docs/Docker.md)
 | [Rules.md](docs/rules/Rules.md) | Project standards and conventions |
 | [Docker.md](docs/Docker.md) | Containerization guide |
 | [Tasks.md](docs/tasks/Tasks.md) | Project completion status |
+| [Report.md](docs/report/Report.md) | Project report |
+| [SPEC_COMPLIANCE.md](docs/report/SPEC_COMPLIANCE.md) | Turkish spec compliance tracking |
 | [Phase Guides](docs/phases/) | Step-by-step implementation (10 phases) |
 | [Bonus README](bonus/README.md) | Python implementation guide |
 
@@ -398,11 +447,12 @@ make V=1
 
 ```bash
 # Compare byte-by-byte
+cd C
 ./Colleen > out.c
-diff -u src/colleen.c out.c
+diff -u Colleen.c out.c
 
 # Or use hex dump
-xxd src/colleen.c > src.hex
+xxd Colleen.c > src.hex
 ./Colleen | xxd > out.hex
 diff src.hex out.hex
 ```

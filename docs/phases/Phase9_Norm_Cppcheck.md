@@ -17,7 +17,7 @@ Tüm C dosyalarının École 42 Norminette kurallarına ve MISRA C:2012 standart
 ## Norminette Kontrolleri
 
 ```bash
-norminette src/*.c hdr/*.h
+norminette C/*.c
 # Sonuç: 0 hata
 ```
 
@@ -35,7 +35,7 @@ norminette src/*.c hdr/*.h
 ## Cppcheck Static Analysis
 
 ```bash
-cppcheck --enable=all src/ hdr/
+cppcheck --enable=all C/
 ```
 
 ### Kontrol Alanları
@@ -51,7 +51,7 @@ cppcheck --enable=all src/ hdr/
 
 1. **Hatalar Listele:**
    ```bash
-   norminette src/*.c 2>&1 | grep "Error"
+   norminette C/*.c 2>&1 | grep "Error"
    ```
 
 2. **Sorunları Düzelt:**
@@ -61,7 +61,7 @@ cppcheck --enable=all src/ hdr/
 
 3. **Doğrulama:**
    ```bash
-   norminette src/*.c
+   norminette C/*.c
    # 0 hata
    ```
 

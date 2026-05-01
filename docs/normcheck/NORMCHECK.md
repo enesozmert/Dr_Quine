@@ -1,12 +1,12 @@
 # Normcheck — Ecole 42 Norm Uyumluluk Kural Seti
 
 > Bu doküman, `norme.en.pdf` (The Norm — Version 2.0.2) referans alınarak
-> hazırlanmıştır. Projedeki `.c` ve `.h` dosyalarının Ecole 42 Norminette
+> hazırlanmıştır. Dr_Quine projesindeki `.c` dosyalarının Ecole 42 Norminette
 > kurallarına uygunluğunu denetlemek için kullanılacak kural setidir.
 >
-> **Not:** `flex` (`.l`) ve `bison` (`.y`) dosyaları ile otomatik üretilen
-> `obj/` altındaki dosyalar (`lex.yy.c`, `y.tab.c`, `y.tab.h`) norm
-> denetimi kapsamı **dışındadır**.
+> **Not:** Quine programları yapısal olarak `LINE_TOO_LONG`, `TOO_MANY_LINES`,
+> `TOO_MANY_VARS_FUNC` gibi norm uyarıları üretir. Bunlar kabul edilen
+> trade-off'lardır (uzun format string + tek main mantığı).
 
 ---
 
@@ -14,10 +14,10 @@
 
 | Kapsam İçi | Kapsam Dışı |
 |------------|-------------|
-| `src/*.c` | `obj/*.c` (flex/bison üretimi) |
-| `hdr/*.h` | `obj/*.h` (flex/bison üretimi) |
-| `main.c` | `src/lexer/lexer.l` (flex DSL) |
-| | `src/parser/parser.y` (bison DSL) |
+| `C/Colleen.c` | `output/` altındaki build artifacts |
+| `C/Grace.c` | Runtime'da üretilen `Sully_*.c`, `Grace_kid.c` |
+| `C/Sully.c` | `ASM/*.s` (norm yalnız C için geçerli) |
+| | `bonus/quine.py` (Python) |
 
 ---
 
@@ -334,26 +334,27 @@ x = (a > 0) ? (b ? 1 : 2) : 0;
 
 ## N-12: Proje Dosya Organizasyonu
 
-### N-12a: Dizin Yapısı
+### N-12a: Dizin Yapısı (Dr_Quine)
 ```
 .
-├── Makefile
-├── main.c
-├── hdr/
-│   ├── codegen.h
-│   ├── codegen_string.h
-│   ├── lexer.h
-│   ├── parser.h
-│   └── symtable.h
-├── src/
-│   ├── codegen.c          (≤ 5 fonksiyon)
-│   ├── codegen_string.c   (≤ 5 fonksiyon)
-│   ├── symtable.c         (≤ 5 fonksiyon)
-│   ├── lexer/
-│   │   └── lexer.l        (norm dışı)
-│   └── parser/
-│       └── parser.y       (norm dışı)
-└── obj/                    (derleme çıktıları — norm dışı)
+├── Makefile                   (root — C/ ve ASM/ Makefile'larına delegate)
+├── CMakeLists.txt
+├── C/
+│   ├── Makefile               (École 42 standart, bağımsız)
+│   ├── Colleen.c              (norm denetimi içinde)
+│   ├── Grace.c                (norm denetimi içinde)
+│   └── Sully.c                (norm denetimi içinde)
+├── ASM/
+│   ├── Makefile
+│   ├── Colleen.s              (norm dışı — Assembly)
+│   ├── Grace.s                (norm dışı)
+│   └── Sully.s                (norm dışı)
+├── output/                    (build & runtime artifacts — norm dışı)
+│   ├── C/
+│   └── ASM/
+├── tests/                     (bash test scriptleri)
+├── docker/                    (Docker dosyaları)
+└── bonus/quine.py             (Python — norm dışı)
 ```
 
 ### N-12b: Dosya Bölme Stratejisi
@@ -364,18 +365,30 @@ Bir `.c` dosyası 5 fonksiyon sınırını aşıyorsa:
 4. `static` yardımcı fonksiyonlar tanımlandıkları dosyada kalır.
 5. Makefile'a yeni kaynak dosyayı ekle.
 
-### N-12c: obj/ Dizini
-- `obj/` dizinindeki dosyalar flex/bison tarafından otomatik üretilir.
+### N-12c: output/ Dizini
+- `output/C/` ve `output/ASM/` dizinleri build sırasında otomatik üretilir.
+- Runtime'da Sully ve Grace bu dizine yazar (`Grace_kid.c`, `Sully_*.c`).
 - Bu dosyalar **versiyon kontrolüne eklenmemeli** (`.gitignore`).
 - Norm denetimi uygulanmaz.
 
 ---
 
-## N-13: Proje Spesifik İstisnalar
+## N-13: Proje Spesifik İstisnalar (Dr_Quine)
 
-Bu projede aşağıdaki kurallar özel koşullarda esnetilebilir:
-- `printf()` kullanımı **serbesttir** (assembly çıktısı stdout'a yazılır).
-- `fprintf(stderr, ...)` kullanımı **serbesttir** (hata mesajları).
+Quine programları yapısal olarak aşağıdaki norm kurallarını **kaçınılmaz**
+şekilde ihlal eder ve bu durum **kabul edilen trade-off**'tur:
+
+- **`LINE_TOO_LONG`** — Quine string literal'ı tek satıra sığar (kaynak ile
+  birebir eşleşmek için bölünemez).
+- **`TOO_MANY_LINES`** — `main()` fonksiyonu 25 satırı geçer; quine yapısı
+  fonksiyon parçalamayı imkansız kılar (self-reference bozulur).
+- **`TOO_MANY_VARS_FUNC`** — Sully.c'de `int n,r; char f[64], c[256]` gibi
+  birden fazla değişken bildirimi (parametrik quine için zorunlu).
+
+Diğer izinler:
+- `printf()` ve `fprintf()` **serbesttir** (Colleen stdout'a yazar, Grace/Sully
+  dosyaya yazar).
+- `system()` Sully için **zorunlu** (compile + recursive run).
 - `malloc()` / `free()` / `strdup()` gibi bellek fonksiyonları **serbesttir**
   (subject tüm glibc fonksiyonlarını serbest bırakır).
 - `exit()` kullanımı **serbesttir** (hata durumlarında çıkış).

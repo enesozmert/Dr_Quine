@@ -1,0 +1,47 @@
+# ============================================================================
+# Dr_Quine - docker-compose.yml
+# Run from project root:
+#   docker compose -f docker/docker-compose.yml up -d
+#   docker compose -f docker/docker-compose.yml exec dr-quine bash
+# ============================================================================
+
+version: '3.8'
+
+services:
+  # Standard runtime: production-style image
+  dr-quine:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: dr_quine:latest
+    container_name: dr_quine
+    working_dir: /app
+    volumes:
+      - ..:/app
+    environment:
+      - CC=gcc
+      - CFLAGS=-Wall -Wextra -Werror -O2
+      - NASM_FLAGS=-f elf64
+    command: /bin/bash
+    stdin_open: true
+    tty: true
+
+  # Dev runtime: same image, debug-friendly flags
+  dr-quine-dev:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: dr_quine:dev
+    container_name: dr_quine_dev
+    working_dir: /app
+    volumes:
+      - ..:/app
+    environment:
+      - CC=gcc
+      - CFLAGS=-Wall -Wextra -Werror -g -O0
+      - NASM_FLAGS=-f elf64 -g
+    command: /bin/bash
+    stdin_open: true
+    tty: true
+    profiles:
+      - dev

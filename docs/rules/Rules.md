@@ -335,10 +335,10 @@ Sully, **öz-çoğalma yapan parametrik quine**'dir. Her çalıştırmada sayaç
 
 ```
 Sully.c çalıştırıldığında:
-  → Sully_8.c oluşturulur (sayaç = 8)
+  → Sully_4.c oluşturulur (Sully.c i=5, decremented)
   
-cd Sully_8 && ./Sully_8 çalıştırıldığında:
-  → Sully_7.c oluşturulur (sayaç = 7)
+./Sully_4 çalıştırıldığında:
+  → Sully_3.c oluşturulur (decremented from 4)
   
 ... devam eder ...
 
@@ -355,12 +355,12 @@ cd Sully_0 && ./Sully_0 çalıştırıldığında:
 cd C/Sully
 make re
 ./Sully
-# Sully_8.c oluşturulmalı (veya başlangıç sayacı)
+# Sully_4.c oluşturulmalı (veya başlangıç sayacı)
 
-cd Sully_8
+cd Sully_4
 make
 ./Sully
-# Sully_7.c oluşturulmalı
+# Sully_3.c oluşturulmalı
 
 # ... devam ...
 
@@ -384,7 +384,7 @@ ls *.c | wc -l  # 1 (sadece sully_0.c)
 
 int main(void)
 {
-	int counter = 8;  /* Başlangıç değeri */
+	int i = 5;  /* Başlangıç değeri (PDF spec) */
 	char *s = "... %d ...";  /* Sayacı format string'e ekle */
 	char filename[256];
 	
@@ -441,17 +441,17 @@ _start:
 C/Sully/
 ├── Makefile
 ├── Sully.c
-├── Sully_8.c (oluşturulur)
-├── Sully_7.c (oluşturulur)
-├── Sully_6.c (oluşturulur)
-├── Sully_5.c (oluşturulur)
+├── Sully_4.c (oluşturulur)
+├── Sully_3.c (oluşturulur)
+├── Sully_2.c (oluşturulur)
+├── Sully_-1.c (oluşturulur, run edilmez)
 ├── Sully_4.c (oluşturulur)
 ├── Sully_3.c (oluşturulur)
 ├── Sully_2.c (oluşturulur)
 ├── Sully_1.c (oluşturulur)
 └── Sully_0.c (oluşturulur)
 
-Toplam: 11 dosya (Sully.c + Sully_0.c ... Sully_8.c)
+Toplam: 13 öğe (Sully + Sully.o + Sully_-1.s + 5 .s + 5 binary), PDF spec ile birebir uyumlu
 ```
 
 ---

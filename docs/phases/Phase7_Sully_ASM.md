@@ -24,8 +24,8 @@ Sully'nin Assembly (x86-64) versiyonu. C versiyonundan daha zor çünkü **strin
 
 ### Doğrulama
 ```bash
-./Sully              # Sully_8.s oluşturur
-cd Sully_8 && ./Sully     # Sully_7.s oluşturur
+./Sully              # Sully_4.s oluşturur (Sully.s ;i=5)
+./Sully_4  # Sully_3.s oluşturur (zincir Sully_-1'e kadar)
 ```
 
 ---
@@ -61,7 +61,7 @@ cd Sully_8 && ./Sully     # Sully_7.s oluşturur
 - [ ] NASM derleme başarılı
 - [ ] Linking başarılı (libc bağlantısı)
 - [ ] `./Sully` çalışıyor
-- [ ] `Sully_8.s` oluşturuldu
+- [ ] `Sully_4.s` oluşturuldu
 - [ ] Tam döngü test edildi
 - [ ] `Sully_0` dosya oluşturmuyor
 - [ ] Exit code 0

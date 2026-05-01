@@ -1,10 +1,8 @@
 #!/bin/bash
 # ============================================================================
-# test_colleen.sh - Test Colleen Quine (Stdout Output)
+# test_colleen.sh - Colleen Quine Detail Tests
 # ============================================================================
-# Tests that Colleen outputs its own source code to stdout
-
-set -e
+# PDF spec: ./Colleen > tmp; diff tmp Colleen.c  → no output (byte-identical)
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -12,102 +10,85 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-TESTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-OUTDIR="$TESTDIR/output"
-SRCDIR="$TESTDIR/src"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+OUT_C="$ROOT/output/C"
+OUT_ASM="$ROOT/output/ASM"
+
+PASS=0
+FAIL=0
 
 echo -e "${BLUE}╔════════════════════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║              Testing Colleen Quine Programs            ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
-# Test 1: Colleen C - Output to stdout
-echo -e "${YELLOW}[TEST 1] Colleen (C) - Stdout Output${NC}"
-if [ -f "$OUTDIR/Colleen" ]; then
-    "$OUTDIR/Colleen" > "$OUTDIR/colleen_c_test.txt" 2>&1
-    if diff -q "$OUTDIR/colleen_c_test.txt" "$SRCDIR/colleen.c" > /dev/null 2>&1; then
-        echo -e "${GREEN}✓ PASS: Colleen C output matches source${NC}"
-        PASS_COUNT=$((PASS_COUNT + 1))
-    else
-        echo -e "${RED}✗ FAIL: Colleen C output does not match source${NC}"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
-        echo "  Diff:"
-        diff "$OUTDIR/colleen_c_test.txt" "$SRCDIR/colleen.c" | head -5
-    fi
+# ---------------- Colleen (C) ----------------
+echo -e "${YELLOW}[TEST 1] Colleen (C) - byte-identical stdout output${NC}"
+if [ -x "$OUT_C/Colleen" ]; then
+	cd "$OUT_C"
+	./Colleen > /tmp/colleen_c_out
+	if diff -q Colleen.c /tmp/colleen_c_out > /dev/null 2>&1; then
+		echo -e "${GREEN}✓ PASS: output == Colleen.c${NC}"
+		PASS=$((PASS+1))
+	else
+		echo -e "${RED}✗ FAIL: diff differs${NC}"
+		diff Colleen.c /tmp/colleen_c_out | head -5
+		FAIL=$((FAIL+1))
+	fi
 else
-    echo -e "${RED}✗ SKIP: Colleen C executable not found${NC}"
+	echo -e "${YELLOW}⊘ SKIP: $OUT_C/Colleen not found (run 'make c')${NC}"
 fi
 echo ""
 
-# Test 2: Colleen C - Output size check
-echo -e "${YELLOW}[TEST 2] Colleen (C) - Output Size${NC}"
-if [ -f "$OUTDIR/Colleen" ]; then
-    SOURCE_SIZE=$(wc -c < "$SRCDIR/colleen.c")
-    OUTPUT_SIZE=$("$OUTDIR/Colleen" 2>/dev/null | wc -c)
-    if [ "$SOURCE_SIZE" -eq "$OUTPUT_SIZE" ]; then
-        echo -e "${GREEN}✓ PASS: Output size ($OUTPUT_SIZE bytes) matches source${NC}"
-        PASS_COUNT=$((PASS_COUNT + 1))
-    else
-        echo -e "${RED}✗ FAIL: Size mismatch (source: $SOURCE_SIZE, output: $OUTPUT_SIZE)${NC}"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
-    fi
+echo -e "${YELLOW}[TEST 2] Colleen (C) - exit code 0${NC}"
+if [ -x "$OUT_C/Colleen" ]; then
+	"$OUT_C/Colleen" > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		echo -e "${GREEN}✓ PASS${NC}"
+		PASS=$((PASS+1))
+	else
+		echo -e "${RED}✗ FAIL: non-zero exit${NC}"
+		FAIL=$((FAIL+1))
+	fi
 else
-    echo -e "${RED}✗ SKIP: Colleen C executable not found${NC}"
+	echo -e "${YELLOW}⊘ SKIP${NC}"
 fi
 echo ""
 
-# Test 3: Colleen C - No empty output
-echo -e "${YELLOW}[TEST 3] Colleen (C) - Non-empty Output${NC}"
-if [ -f "$OUTDIR/Colleen" ]; then
-    OUTPUT_LINES=$("$OUTDIR/Colleen" 2>/dev/null | wc -l)
-    if [ "$OUTPUT_LINES" -gt 0 ]; then
-        echo -e "${GREEN}✓ PASS: Output has $OUTPUT_LINES lines${NC}"
-        PASS_COUNT=$((PASS_COUNT + 1))
-    else
-        echo -e "${RED}✗ FAIL: Output is empty${NC}"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
-    fi
+echo -e "${YELLOW}[TEST 3] Colleen (C) - non-empty output${NC}"
+if [ -x "$OUT_C/Colleen" ]; then
+	BYTES=$("$OUT_C/Colleen" | wc -c)
+	if [ "$BYTES" -gt 0 ]; then
+		echo -e "${GREEN}✓ PASS: $BYTES bytes${NC}"
+		PASS=$((PASS+1))
+	else
+		echo -e "${RED}✗ FAIL: empty output${NC}"
+		FAIL=$((FAIL+1))
+	fi
 else
-    echo -e "${RED}✗ SKIP: Colleen C executable not found${NC}"
+	echo -e "${YELLOW}⊘ SKIP${NC}"
 fi
 echo ""
 
-# Test 4: Colleen C - Exit code
-echo -e "${YELLOW}[TEST 4] Colleen (C) - Exit Code${NC}"
-if [ -f "$OUTDIR/Colleen" ]; then
-    "$OUTDIR/Colleen" > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        echo -e "${GREEN}✓ PASS: Exit code is 0${NC}"
-        PASS_COUNT=$((PASS_COUNT + 1))
-    else
-        echo -e "${RED}✗ FAIL: Exit code is not 0${NC}"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
-    fi
+# ---------------- Colleen (ASM) ----------------
+echo -e "${YELLOW}[TEST 4] Colleen (ASM) - byte-identical stdout output${NC}"
+if [ -x "$OUT_ASM/colleen" ]; then
+	cd "$OUT_ASM"
+	./colleen > /tmp/colleen_asm_out
+	if diff -q Colleen.s /tmp/colleen_asm_out > /dev/null 2>&1; then
+		echo -e "${GREEN}✓ PASS: output == Colleen.s${NC}"
+		PASS=$((PASS+1))
+	else
+		echo -e "${RED}✗ FAIL: diff differs${NC}"
+		FAIL=$((FAIL+1))
+	fi
 else
-    echo -e "${RED}✗ SKIP: Colleen C executable not found${NC}"
+	echo -e "${YELLOW}⊘ SKIP: $OUT_ASM/colleen not found (Linux + NASM required)${NC}"
 fi
 echo ""
 
-# Test 5: Colleen Assembly - Output to stdout (if available)
-echo -e "${YELLOW}[TEST 5] Colleen (Assembly) - Stdout Output${NC}"
-if [ -f "$OUTDIR/colleen" ]; then
-    "$OUTDIR/colleen" > "$OUTDIR/colleen_asm_test.s" 2>&1
-    if diff -q "$OUTDIR/colleen_asm_test.s" "$SRCDIR/colleen.s" > /dev/null 2>&1; then
-        echo -e "${GREEN}✓ PASS: Colleen ASM output matches source${NC}"
-        PASS_COUNT=$((PASS_COUNT + 1))
-    else
-        echo -e "${RED}✗ FAIL: Colleen ASM output does not match source${NC}"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
-    fi
-else
-    echo -e "${YELLOW}⊘ SKIP: Colleen Assembly executable not found (Windows)${NC}"
-fi
-echo ""
-
-# Summary
 echo -e "${BLUE}════════════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}Passed: $((PASS_COUNT))${NC}"
-echo -e "${RED}Failed: $((FAIL_COUNT))${NC}"
+echo -e "${GREEN}Passed: $PASS${NC}    ${RED}Failed: $FAIL${NC}"
 echo -e "${BLUE}════════════════════════════════════════════════════════${NC}"
 
-[ "$FAIL_COUNT" -eq 0 ] && exit 0 || exit 1
+[ "$FAIL" -eq 0 ] && exit 0 || exit 1

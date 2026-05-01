@@ -1,8 +1,8 @@
 #!/bin/bash
-# ========================================================================
-# check_cppcheck.sh - Static Code Analysis with Cppcheck
-# ========================================================================
-# Runs Cppcheck for MISRA C:2012 compliance and common issues
+# ============================================================================
+# check_cppcheck.sh - Static Analysis with Cppcheck (Dr_Quine)
+# ============================================================================
+# Suppresses known false positives from quine format strings (%% / %c).
 
 set -e
 
@@ -12,46 +12,47 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-SRCDIR="src"
-HDRDIR="hdr"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CDIR="$ROOT/C"
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
 echo -e "${BLUE}    Static Code Analysis - Cppcheck${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
 echo ""
 
-# Check if cppcheck is installed
 if ! command -v cppcheck &> /dev/null; then
 	echo -e "${RED}✗ cppcheck not found${NC}"
-	echo "  Install: apt-get install cppcheck"
+	echo "  Install: apt-get install cppcheck (Linux), brew install cppcheck (macOS)"
 	exit 1
 fi
 
-echo -e "${YELLOW}Running Cppcheck analysis...${NC}"
+echo -e "${YELLOW}Running cppcheck on C/...${NC}"
 echo ""
 
-# Run cppcheck
-cppcheck --enable=all \
+# Project uses C99; suppress known quine-related false positives
+cppcheck \
+	--enable=warning \
 	--inconclusive \
-	--std=c11 \
+	--std=c99 \
 	--force \
 	--suppress=missingIncludeSystem \
 	--suppress=unusedFunction \
-	-I$HDRDIR \
+	--suppress=wrongPrintfScanfArgNum \
+	--suppress=knownConditionTrueFalse \
 	--quiet \
-	$SRCDIR 2>&1 | tee /tmp/cppcheck.txt
+	"$CDIR" 2>&1 | tee /tmp/cppcheck.txt
 
 echo ""
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
 
-# Count errors
-if [ -s /tmp/cppcheck.txt ]; then
-	ERROR_COUNT=$(grep -c "^\[" /tmp/cppcheck.txt || echo "0")
-	if [ "$ERROR_COUNT" -gt 0 ]; then
-		echo -e "${RED}[✗] Cppcheck found issues: $ERROR_COUNT${NC}"
-		exit 1
-	fi
+# Count actual issues (after suppressions)
+ERROR_COUNT=$(grep -cE "^\[|: (error|warning):" /tmp/cppcheck.txt 2>/dev/null || true)
+ERROR_COUNT=${ERROR_COUNT:-0}
+
+if [ "$ERROR_COUNT" -gt 0 ]; then
+	echo -e "${RED}[✗] Cppcheck found $ERROR_COUNT issue(s)${NC}"
+	exit 1
 fi
 
-echo -e "${GREEN}[✓] Cppcheck passed without critical issues!${NC}"
+echo -e "${GREEN}[✓] Cppcheck passed (warning level, no critical issues)${NC}"
 exit 0

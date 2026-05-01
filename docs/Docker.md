@@ -170,17 +170,26 @@ bash scripts/check_all.sh
 ### Individual Tests
 
 ```bash
+# Build C versions
+make c
+cd C
+
 # Test Colleen (C)
 ./Colleen > test_out.c
-diff test_out.c src/colleen.c && echo "✓ PASS" || echo "✗ FAIL"
+diff test_out.c Colleen.c && echo "✓ PASS" || echo "✗ FAIL"
 
 # Test Grace (C)
 ./Grace
-diff Grace_kid.c src/grace.c && echo "✓ PASS" || echo "✗ FAIL"
+diff Grace_kid.c Grace.c && echo "✓ PASS" || echo "✗ FAIL"
 
-# Test Sully (C)
+# Test Sully (C) - counter starts at 5
 ./Sully
-ls Sully_*.c | wc -l  # Should show 1 file
+ls Sully_*.c | wc -l  # Should show 13 items (Sully + Sully.o + 6 .s + 6 binary, PDF=13)
+
+# Build & test Assembly versions
+cd ../ASM
+make
+./colleen > test_out.s && diff test_out.s Colleen.s
 
 # Test Python Bonus
 python3 bonus/quine.py
@@ -192,10 +201,10 @@ python3 bonus/quine.py sully 3
 
 ```bash
 # Norminette (École 42 norm)
-norminette src/*.c
+norminette C/*.c
 
 # Static analysis
-cppcheck --enable=all --std=c11 -Ihdr src/
+cppcheck --enable=all --std=c99 C/
 
 # Valgrind (memory check)
 valgrind --leak-check=full ./Colleen > /dev/null

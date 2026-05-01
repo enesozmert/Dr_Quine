@@ -39,7 +39,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.s | $(OBJDIR)
 ### Colleen Test
 ```bash
 ./Colleen > /tmp/colleen_out.c
-diff /tmp/colleen_out.c src/colleen.c
+diff /tmp/colleen_out.c C/Colleen.c
 echo $?  # 0 olmalı
 ```
 
@@ -52,7 +52,7 @@ echo $?  # 0 olmalı
 
 ### Sully Test
 ```bash
-./Sully && cd Sully_8 && ./Sully && cd Sully_7 && ...
+./Sully  # Sully recursively chains: Sully_4 → Sully_3 → ... → Sully_-1.c (no exec)
 # Tüm döngü test edilmeli
 ```
 
@@ -63,7 +63,7 @@ echo $?  # 0 olmalı
 ```bash
 make fclean
 make all
-touch src/colleen.c
+touch C/Colleen.c
 make all
 # Yeniden derlemez (relink yok)
 ```

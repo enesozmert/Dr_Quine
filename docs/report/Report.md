@@ -235,15 +235,15 @@ Sonuç: ✅ / ❌ / ⚠️
 
 #### Dosya Oluşturma Testi (Sayaç = 8)
 ```
-[ ] Sully_8.c oluşturuldu mu?
-[ ] Sully_8.c derlenebiliyor mu?
-[ ] diff Sully.c Sully_8.c (aynı olmalı)
+[ ] Sully_4.c oluşturuldu mu?
+[ ] Sully_4.c derlenebiliyor mu?
+[ ] diff Sully.c Sully_4.c (aynı olmalı)
 ```
 
 #### Döngü Testi
 ```
-[ ] cd Sully_8 && make && ./Sully → Sully_7.c
-[ ] cd Sully_7 && make && ./Sully → Sully_6.c
+[ ] ./Sully_4 → Sully_3.c
+[ ] ./Sully_3 → Sully_2.c
 [ ] ... (devam)
 [ ] cd Sully_1 && make && ./Sully → Sully_0.c
 [ ] cd Sully_0 && make && ./Sully → DOSYA YOK
@@ -276,7 +276,7 @@ Sonuç: ✅ / ❌ / ⚠️
 
 #### Dosya Oluşturma ve Döngü Testi
 ```
-[ ] Sully_8.s oluşturuldu mu?
+[ ] Sully_4.s oluşturuldu mu?
 [ ] Döngü tamamı çalışıyor mu?
 [ ] Sully_0.s oluşturulduğunda durmuyor mu?
 ```

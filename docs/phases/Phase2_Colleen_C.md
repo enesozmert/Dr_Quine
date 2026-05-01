@@ -39,7 +39,7 @@ diff output.c colleen.c
 
 ### 1. Temel Yapıyı Oluştur
 
-**Dosya:** `src/colleen.c`
+**Dosya:** `C/Colleen.c`
 
 ```c
 /* ************************************************************************** */
@@ -107,7 +107,7 @@ printf(s, s);
 ```bash
 cd /path/to/Dr_Quine
 make all
-# Veya: gcc -Wall -Wextra -Werror -g -Ihdr -o Colleen src/colleen.c
+# Veya: gcc -Wall -Wextra -Werror -g -Ihdr -o Colleen C/Colleen.c
 ```
 
 **Beklenen Sonuç:** `Colleen` executable'ı oluşturulmalı
@@ -133,7 +133,7 @@ make all
 
 ```bash
 ./Colleen > test_colleen.c
-diff test_colleen.c src/colleen.c
+diff test_colleen.c C/Colleen.c
 echo $?
 # Sonuç: 0 (dosyalar aynı)
 ```
@@ -146,7 +146,7 @@ echo $?
 
 ### Gerekli Kontroller
 ```bash
-norminette src/colleen.c
+norminette C/Colleen.c
 # Sonuç: 0 hata
 ```
 
@@ -173,7 +173,7 @@ norminette src/colleen.c
 **Çözüm:** 
 ```bash
 xxd -l 50 test_colleen.c > /tmp/out1.hex
-xxd -l 50 src/colleen.c > /tmp/out2.hex
+xxd -l 50 C/Colleen.c > /tmp/out2.hex
 diff /tmp/out1.hex /tmp/out2.hex
 ```
 Byte-by-byte karşılaştırma yapın.
@@ -202,10 +202,10 @@ Byte-by-byte karşılaştırma yapın.
 
 - [ ] **Derleme:** `make all` başarılı
 - [ ] **Çalışma:** `./Colleen` crash etmez
-- [ ] **Çıktı Testi:** `./Colleen > test.c && diff test.c src/colleen.c`
-- [ ] **Norm:** `norminette src/colleen.c` = 0 hata
+- [ ] **Çıktı Testi:** `./Colleen > test.c && diff test.c C/Colleen.c`
+- [ ] **Norm:** `norminette C/Colleen.c` = 0 hata
 - [ ] **Tekrar Çalıştırma:** Deterministic (aynı çıktı)
-- [ ] **Cppcheck:** `cppcheck src/colleen.c` - warning yok
+- [ ] **Cppcheck:** `cppcheck C/Colleen.c` - warning yok
 
 ---
 
@@ -233,9 +233,9 @@ Byte-by-byte karşılaştırma yapın.
 ## Aşama Bitince Kontrolü
 
 Aşama 2 bittiğinde:
-- [ ] `src/colleen.c` mevcut ve çalışıyor
-- [ ] `./Colleen > out.c && diff out.c src/colleen.c` = başarılı
-- [ ] `norminette src/colleen.c` = 0 hata
+- [ ] `C/Colleen.c` mevcut ve çalışıyor
+- [ ] `./Colleen > out.c && diff out.c C/Colleen.c` = başarılı
+- [ ] `norminette C/Colleen.c` = 0 hata
 - [ ] `make fclean && make all` = başarılı
 - [ ] Git commit yapıldı
 

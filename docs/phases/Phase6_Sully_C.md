@@ -25,8 +25,8 @@ Sully, **parametrik self-replicating quine** (öz-çoğalan quine). Her çalış
 
 ### Doğrulama Komutu
 ```bash
-./Sully              # Sully_8.c oluşturur
-cd Sully_8 && ./Sully_8    # Sully_7.c oluşturur
+./Sully              # Sully_4.c oluşturur (Sully.c counter=5)
+./Sully_4    # Sully_3.c oluşturur
 # ...
 cd Sully_0 && ./Sully_0    # DOSYA OLUŞTURMAZ
 ```
@@ -38,7 +38,7 @@ cd Sully_0 && ./Sully_0    # DOSYA OLUŞTURMAZ
 ### 1. Sayaç Tanımı
 
 ```c
-int counter = 8;  /* Başlangıç değeri */
+int i = 5;  /* Başlangıç değeri */
 ```
 
 ### 2. Dosya Adı Oluşturma
@@ -73,8 +73,8 @@ Quine string'i sayacı içermelidir ve her çalıştırmada azaltılmalıdır.
 
 - [ ] Derleme başarılı
 - [ ] `./Sully` çalışıyor
-- [ ] `Sully_8.c` oluşturuldu
-- [ ] `cd Sully_8 && make && ./Sully` → `Sully_7.c`
+- [ ] `Sully_4.c` oluşturuldu
+- [ ] `./Sully_4` → `Sully_3.c`
 - [ ] Tam döngü test edildi (8 → 0)
 - [ ] `Sully_0` dosya oluşturmuyor
 - [ ] Norm uyumlu

@@ -23,9 +23,9 @@ Dr_Quine projesi aşağıdaki ana aşamalardan oluşur. Her aşama, belirli gör
 - ✅ Git repository kuruldu (7 initial commit)
 - ✅ Proje klasör mimarisi oluşturuldu:
   - ✅ `docs/` (dokümantasyon)
-  - ✅ `src/` (kaynak dosyalar)
-  - ✅ `hdr/` (header dosyalar)
-  - ✅ `obj/` (object dosyalar)
+  - ✅ `C/` ve `ASM/` (kaynak dosyalar — top-level, spec gereği)
+  - ✅ `docker/` (Docker yapılandırması), `tests/` (test scriptleri)
+  - ✅ `output/C/`, `output/ASM/` (build artifacts)
   - ✅ `output/` (çıktı dosyaları)
   - ✅ `tests/` (test dosyaları)
   - ✅ `scripts/` (kontrol scriptleri)
@@ -49,7 +49,7 @@ Dr_Quine projesi aşağıdaki ana aşamalardan oluşur. Her aşama, belirli gör
 ## Aşama 2: Colleen (C Versiyonu) ✅ TAMAMLANDI
 
 **Tarih Tamamlandı:** 2026-05-01 02:05:00  
-**Dosya:** src/colleen.c (65 satır)
+**Dosya:** C/Colleen.c (65 satır)
 
 ### Tamamlanan Görevler
 - ✅ C quine mekanizması uygulandı
@@ -73,7 +73,7 @@ Dr_Quine projesi aşağıdaki ana aşamalardan oluşur. Her aşama, belirli gör
 ## Aşama 3: Colleen (Assembly Versiyonu) ✅ TAMAMLANDI
 
 **Tarih Tamamlandı:** 2026-05-01 02:10:00  
-**Dosya:** src/colleen.s (73 satır)
+**Dosya:** ASM/Colleen.s (73 satır)
 
 ### Tamamlanan Görevler
 - ✅ x86-64 Assembly quine uygulandı
@@ -96,7 +96,7 @@ Dr_Quine projesi aşağıdaki ana aşamalardan oluşur. Her aşama, belirli gör
 ## Aşama 4: Grace (C Versiyonu) ✅ TAMAMLANDI
 
 **Tarih Tamamlandı:** 2026-05-01 02:15:00  
-**Dosya:** src/grace.c (78 satır)
+**Dosya:** C/Grace.c (78 satır)
 
 ### Tamamlanan Görevler
 - ✅ Dosya I/O mekanizması uygulandı
@@ -118,7 +118,7 @@ Dr_Quine projesi aşağıdaki ana aşamalardan oluşur. Her aşama, belirli gör
 ## Aşama 5: Grace (Assembly Versiyonu) ✅ TAMAMLANDI
 
 **Tarih Tamamlandı:** 2026-05-01 02:20:00  
-**Dosya:** src/grace.s (107 satır)
+**Dosya:** ASM/Grace.s (107 satır)
 
 ### Tamamlanan Görevler
 - ✅ Syscall tabanlı dosya yazma
@@ -141,7 +141,7 @@ Dr_Quine projesi aşağıdaki ana aşamalardan oluşur. Her aşama, belirli gör
 ## Aşama 6: Sully (C Versiyonu) ✅ TAMAMLANDI
 
 **Tarih Tamamlandı:** 2026-05-01 02:25:00  
-**Dosya:** src/sully.c (94 satır)
+**Dosya:** C/Sully.c (94 satır)
 
 ### Tamamlanan Görevler
 - ✅ Dinamik parametreli quine uygulandı
@@ -153,7 +153,7 @@ Dr_Quine projesi aşağıdaki ana aşamalardan oluşur. Her aşama, belirli gör
 - ✅ Derleme ve çalıştırma
   - ✅ `make all` başarılı
   - ✅ `./Sully` çalıştırıyor
-  - ✅ Sully_8.c dosyası oluşturuluyor
+  - ✅ Sully_4.c dosyası oluşturuluyor
 
 - ✅ Doğrulama testleri
   - ✅ Recursive döngü 9 dosya üretiyor
@@ -165,7 +165,7 @@ Dr_Quine projesi aşağıdaki ana aşamalardan oluşur. Her aşama, belirli gör
 ## Aşama 7: Sully (Assembly Versiyonu) ✅ TAMAMLANDI
 
 **Tarih Tamamlandı:** 2026-05-01 02:30:00  
-**Dosya:** src/sully.s (124 satır)
+**Dosya:** ASM/Sully.s (124 satır)
 
 ### Tamamlanan Görevler
 - ✅ Assembly'de dinamik sayaç yönetimi
@@ -308,26 +308,26 @@ make re        # Clean rebuild
 # Individual Program Tests
 # Colleen (C)
 ./Colleen > test_out.c
-diff test_out.c src/colleen.c && echo "✓ Colleen (C) OK" || echo "✗ FAIL"
+diff test_out.c C/Colleen.c && echo "✓ Colleen (C) OK" || echo "✗ FAIL"
 
 # Colleen (ASM)
 ./colleen > test_out.s
-diff test_out.s src/colleen.s && echo "✓ Colleen (ASM) OK" || echo "✗ FAIL"
+diff test_out.s ASM/Colleen.s && echo "✓ Colleen (ASM) OK" || echo "✗ FAIL"
 
 # Grace (C)
 ./Grace
-diff Grace_kid.c src/grace.c && echo "✓ Grace (C) OK" || echo "✗ FAIL"
+diff Grace_kid.c C/Grace.c && echo "✓ Grace (C) OK" || echo "✗ FAIL"
 
 # Grace (ASM)
 ./grace
-diff Grace_kid.s src/grace.s && echo "✓ Grace (ASM) OK" || echo "✗ FAIL"
+diff Grace_kid.s ASM/Grace.s && echo "✓ Grace (ASM) OK" || echo "✗ FAIL"
 
 # Sully (C) — Tam Döngü
-./Sully && cd Sully_8 && ./Sully && cd ../Sully_7 && ./Sully && cd ../Sully_6 && ./Sully
+./Sully  # tek komut, otomatik tüm zincir (Sully_4 → Sully_-1.c)
 # ... Sully_0'a kadar devam
 
 # Sully (ASM) — Tam Döngü
-./sully && cd Sully_8 && ./sully && cd ../Sully_7 && ./sully
+./sully  # tek komut, otomatik tüm zincir
 # ... Sully_0'a kadar devam
 
 # Quality Assurance
@@ -430,12 +430,12 @@ Commit Sayısı:         16
 
 ### Doğrulama Sonuçları
 ```
-✓ Colleen (C):  src/colleen.c (65 satır) — byte-for-byte identical output
-✓ Colleen (A):  src/colleen.s (73 satır) — byte-for-byte identical output
-✓ Grace (C):    src/grace.c (78 satır)   — creates Grace_kid.c identical
-✓ Grace (A):    src/grace.s (107 satır)  — creates Grace_kid.s identical
-✓ Sully (C):    src/sully.c (94 satır)   — creates 9 files (Sully_8 to Sully_0)
-✓ Sully (A):    src/sully.s (124 satır)  — creates 9 files (Sully_8 to Sully_0)
+✓ Colleen (C):  C/Colleen.c (65 satır) — byte-for-byte identical output
+✓ Colleen (A):  ASM/Colleen.s (73 satır) — byte-for-byte identical output
+✓ Grace (C):    C/Grace.c (78 satır)   — creates Grace_kid.c identical
+✓ Grace (A):    ASM/Grace.s (107 satır)  — creates Grace_kid.s identical
+✓ Sully (C):    C/Sully.c (94 satır)   — creates 6 files (Sully_4 down to Sully_-1)
+✓ Sully (A):    ASM/Sully.s (124 satır)  — creates 6 files (Sully_4 down to Sully_-1)
 ✓ Bonus (PY):   bonus/quine.py (241 satır) — all 3 variants implemented
 ```
 

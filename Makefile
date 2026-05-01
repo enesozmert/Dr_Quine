@@ -1,12 +1,10 @@
 # **************************************************************************** #
 #                                                                              #
-#                                                         :::      ::::::::    #
-#                            Makefile                   :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#                            By: ozmerte <ozmerte@gmail.com>          #
-#                                                   +#+  +:+       +#+         #
-#                            Created: 2026/05/01 01:52:00 by ozmerte        #
-#                            Updated: 2026/05/01 02:00:00 by ozmerte       #
+#                            Dr_Quine - Root Makefile                          #
+#                            Delegates to C/ and ASM/ Makefiles                #
+#                            By: ozmerte <ozmerte@gmail.com>                   #
+#                            Created: 2026/05/01                               #
+#                            Updated: 2026/05/01                               #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,217 +16,206 @@ RED			=	\033[0;31m
 GREEN		=	\033[0;32m
 YELLOW		=	\033[0;33m
 BLUE		=	\033[0;34m
+CYAN		=	\033[0;36m
 NC			=	\033[0m
 
 # ============================================================================
-# VARIABLES CONFIGURATION (École 42 Standard)
+# DIRECTORY CONFIGURATION
 # ============================================================================
 
-CC			=	gcc
-CFLAGS		=	-Wall -Wextra -Werror -g -I$(HDRDIR)
-LDFLAGS		=	-lm
-
-SRCDIR		=	src
-HDRDIR		=	hdr
-OBJDIR		=	obj
-OUTDIR		=	output
+CDIR		=	C
+ASMDIR		=	ASM
 TESTDIR		=	tests
-
-# Source Files - C Programs (Quine implementations)
-COLLEEN_C	=	$(SRCDIR)/colleen.c
-GRACE_C		=	$(SRCDIR)/grace.c
-SULLY_C		=	$(SRCDIR)/sully.c
-
-# All source files for compilation
-SRCS		=	$(COLLEEN_C) \
-				$(GRACE_C) \
-				$(SULLY_C)
-
-# Object Files
-OBJS		=	$(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCS))
-
-# Executables (C versions with capital first letter per spec)
-COLLEEN		=	$(OUTDIR)/Colleen
-GRACE		=	$(OUTDIR)/Grace
-SULLY		=	$(OUTDIR)/Sully
-
-# Assembly executables (lowercase per convention)
-COLLEEN_ASM	=	$(OUTDIR)/colleen
-GRACE_ASM	=	$(OUTDIR)/grace
-SULLY_ASM	=	$(OUTDIR)/sully
-
-# All binaries
-BINARIES	=	$(COLLEEN) $(GRACE) $(SULLY) $(COLLEEN_ASM) $(GRACE_ASM) $(SULLY_ASM)
+BONUSDIR	=	bonus
+OUTDIR		=	output
 
 # ============================================================================
-# PHONY TARGETS (École 42 Required)
+# PHONY TARGETS
 # ============================================================================
 
-.PHONY: all clean fclean re help test norm cppcheck show
+.PHONY: all clean fclean re help test errors qa c asm bonus norm cppcheck show \
+        docker-build docker-run docker-test docker-clean
 
 # ============================================================================
 # DEFAULT TARGET
 # ============================================================================
 
-all: $(BINARIES)
+all: c asm
+	@echo "$(GREEN)═══════════════════════════════════════════════════════$(NC)"
+	@echo "$(GREEN)[✓] All quine programs built successfully$(NC)"
+	@echo "$(GREEN)═══════════════════════════════════════════════════════$(NC)"
 
 # ============================================================================
-# EXECUTABLE COMPILATION RULES (No Relink)
+# C SUBPROJECT BUILD
 # ============================================================================
 
-$(COLLEEN): $(OBJDIR)/colleen.o | $(OUTDIR)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-
-$(GRACE): $(OBJDIR)/grace.o | $(OUTDIR)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-
-$(SULLY): $(OBJDIR)/sully.o | $(OUTDIR)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+c:
+	@echo "$(BLUE)═══════════════════════════════════════════════════════$(NC)"
+	@echo "$(BLUE)Building C Quine Programs...$(NC)"
+	@echo "$(BLUE)═══════════════════════════════════════════════════════$(NC)"
+	@$(MAKE) -C $(CDIR) all
 
 # ============================================================================
-# ASSEMBLY EXECUTABLE COMPILATION RULES
+# ASSEMBLY SUBPROJECT BUILD
 # ============================================================================
 
-$(COLLEEN_ASM): $(OBJDIR)/colleen.o | $(OUTDIR)
-	ld -o $@ $^
-
-$(GRACE_ASM): $(OBJDIR)/grace.o | $(OUTDIR)
-	ld -o $@ $^
-
-$(SULLY_ASM): $(OBJDIR)/sully.o | $(OUTDIR)
-	ld -lc -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o $@ $^
+asm:
+	@echo "$(BLUE)═══════════════════════════════════════════════════════$(NC)"
+	@echo "$(BLUE)Building Assembly Quine Programs...$(NC)"
+	@echo "$(BLUE)═══════════════════════════════════════════════════════$(NC)"
+	@$(MAKE) -C $(ASMDIR) all
 
 # ============================================================================
-# OBJECT FILE COMPILATION RULES
-# ============================================================================
-
-$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(OBJDIR)/colleen.o: $(SRCDIR)/colleen.s | $(OBJDIR)
-	nasm -f elf64 $< -o $@
-
-$(OBJDIR)/grace.o: $(SRCDIR)/grace.s | $(OBJDIR)
-	nasm -f elf64 $< -o $@
-
-$(OBJDIR)/sully.o: $(SRCDIR)/sully.s | $(OBJDIR)
-	nasm -f elf64 $< -o $@
-
-# ============================================================================
-# DIRECTORY CREATION RULES (Order-only dependencies)
-# ============================================================================
-
-$(OBJDIR):
-	@mkdir -p $(OBJDIR)
-
-$(OUTDIR):
-	@mkdir -p $(OUTDIR)
-
-# ============================================================================
-# CLEAN TARGETS (École 42 Required)
+# CLEAN TARGETS
 # ============================================================================
 
 clean:
-	rm -rf $(OBJDIR)
+	@$(MAKE) -C $(CDIR) clean
+	@$(MAKE) -C $(ASMDIR) clean
+	@echo "$(YELLOW)[i] Object files cleaned$(NC)"
 
-fclean: clean
-	rm -rf $(OUTDIR)
-	rm -f *_kid.c *_kid.s
-	rm -f Sully_*.c Sully_*.s
+fclean:
+	@$(MAKE) -C $(CDIR) fclean
+	@$(MAKE) -C $(ASMDIR) fclean
+	@rm -rf $(OUTDIR)
+	@echo "$(YELLOW)[i] All artifacts cleaned (output/ removed)$(NC)"
 
 re: fclean all
-
-# ============================================================================
-# HELP TARGET
-# ============================================================================
-
-help:
-	@echo "Dr_Quine - Self-Replicating Quine Programs"
-	@echo ""
-	@echo "Available targets:"
-	@echo "  make all     - Build all quine programs (Colleen, Grace, Sully)"
-	@echo "  make clean   - Remove object files"
-	@echo "  make fclean  - Remove object files and executables"
-	@echo "  make re      - Rebuild (fclean + all)"
-	@echo "  make help    - Show this help"
-	@echo "  make norm    - Check norm compliance"
-	@echo "  make cppcheck - Run static analysis"
-	@echo "  make test    - Run test suite"
-	@echo "  make show    - Show source files status"
 
 # ============================================================================
 # TEST TARGET
 # ============================================================================
 
-test: $(BINARIES)
-	@echo "$(BLUE)═══════════════════════════════════════════════════════$(NC)"
-	@echo "$(BLUE)Testing Colleen (C version)...$(NC)"
-	@$(OUTDIR)/Colleen > $(OUTDIR)/colleen_c_out.c && \
-		diff -q $(OUTDIR)/colleen_c_out.c $(SRCDIR)/colleen.c > /dev/null && \
-		echo "$(GREEN)✓ Colleen C PASSED$(NC)" || echo "$(RED)✗ Colleen C FAILED$(NC)"
-	@echo ""
-	@echo "$(BLUE)Testing Colleen (Assembly version)...$(NC)"
-	@$(OUTDIR)/colleen > $(OUTDIR)/colleen_asm_out.s && \
-		diff -q $(OUTDIR)/colleen_asm_out.s $(SRCDIR)/colleen.s > /dev/null && \
-		echo "$(GREEN)✓ Colleen ASM PASSED$(NC)" || echo "$(RED)✗ Colleen ASM FAILED$(NC)"
-	@echo ""
-	@echo "$(BLUE)Testing Grace (C version)...$(NC)"
-	@cd $(OUTDIR) && ./Grace && \
-		diff -q Grace_kid.c ../$(SRCDIR)/grace.c > /dev/null && \
-		echo "$(GREEN)✓ Grace C PASSED$(NC)" || echo "$(RED)✗ Grace C FAILED$(NC)"
-	@echo ""
-	@echo "$(BLUE)Testing Grace (Assembly version)...$(NC)"
-	@cd $(OUTDIR) && ./grace && \
-		diff -q Grace_kid.s ../$(SRCDIR)/grace.s > /dev/null && \
-		echo "$(GREEN)✓ Grace ASM PASSED$(NC)" || echo "$(RED)✗ Grace ASM FAILED$(NC)"
-	@echo ""
-	@echo "$(BLUE)Testing Sully (C version)...$(NC)"
-	@cd $(OUTDIR) && ./Sully && test -f Sully_7.c && \
-		echo "$(GREEN)✓ Sully C PASSED$(NC)" || echo "$(RED)✗ Sully C FAILED$(NC)"
-	@echo ""
-	@echo "$(BLUE)Testing Sully (Assembly version)...$(NC)"
-	@cd $(OUTDIR) && ./sully && test -f Sully_7.s && \
-		echo "$(GREEN)✓ Sully ASM PASSED$(NC)" || echo "$(RED)✗ Sully ASM FAILED$(NC)"
-	@echo ""
-	@echo "$(BLUE)═══════════════════════════════════════════════════════$(NC)"
-	@echo "$(GREEN)[✓] All tests completed!$(NC)"
+test: all
+	@echo "$(CYAN)═══════════════════════════════════════════════════════$(NC)"
+	@echo "$(CYAN)Running Test Suite (test_all.sh)...$(NC)"
+	@echo "$(CYAN)═══════════════════════════════════════════════════════$(NC)"
+	@bash $(TESTDIR)/test_all.sh
 
 # ============================================================================
-# NORM COMPLIANCE TARGET
+# CRASH/ERROR HANDLING TESTS (PDF §IV)
+# ============================================================================
+
+errors: all
+	@echo "$(CYAN)═══════════════════════════════════════════════════════$(NC)"
+	@echo "$(CYAN)Running Crash/Error Handling Tests...$(NC)"
+	@echo "$(CYAN)═══════════════════════════════════════════════════════$(NC)"
+	@bash $(TESTDIR)/test_errors.sh
+
+# ============================================================================
+# FULL QA PIPELINE (norm + cppcheck + tests + relink check)
+# ============================================================================
+
+qa:
+	@echo "$(CYAN)═══════════════════════════════════════════════════════$(NC)"
+	@echo "$(CYAN)Running Full QA Pipeline (scripts/check_all.sh)...$(NC)"
+	@echo "$(CYAN)═══════════════════════════════════════════════════════$(NC)"
+	@bash scripts/check_all.sh
+
+# ============================================================================
+# BONUS (Python) TARGET
+# ============================================================================
+
+bonus:
+	@echo "$(BLUE)═══════════════════════════════════════════════════════$(NC)"
+	@echo "$(BLUE)Bonus: Python Quine Implementation$(NC)"
+	@echo "$(BLUE)═══════════════════════════════════════════════════════$(NC)"
+	@command -v python3 >/dev/null 2>&1 || { echo "$(RED)python3 not found$(NC)"; exit 1; }
+	@bash $(TESTDIR)/test_python.sh
+
+# ============================================================================
+# NORM CHECK TARGET
 # ============================================================================
 
 norm:
-	@echo "Checking École 42 norm compliance..."
-	@command -v norminette >/dev/null 2>&1 || { echo "norminette not found"; exit 1; }
-	@norminette -R CheckForbiddenSourceHeader $(SRCS) $(HDRDIR)/*.h 2>&1 || true
-	@echo "Norm check complete"
+	@echo "$(BLUE)Checking École 42 norm compliance...$(NC)"
+	@bash scripts/check_norm.sh
 
 # ============================================================================
 # STATIC ANALYSIS TARGET
 # ============================================================================
 
 cppcheck:
-	@echo "Running cppcheck static analysis..."
-	@command -v cppcheck >/dev/null 2>&1 || { echo "cppcheck not found"; exit 1; }
-	@cppcheck --enable=all --inconclusive --std=c11 --force \
-		--suppress=missingIncludeSystem \
-		--suppress=unusedFunction \
-		-I $(HDRDIR) --quiet $(SRCS) 2>&1
-	@echo "Cppcheck complete"
+	@echo "$(BLUE)Running cppcheck static analysis...$(NC)"
+	@bash scripts/check_cppcheck.sh
 
 # ============================================================================
-# SHOW SOURCE FILES STATUS
+# SHOW STATUS
 # ============================================================================
 
 show:
-	@echo "Source files status:"
-	@for file in $(SRCS); do \
+	@echo "$(CYAN)═══════════════════════════════════════════════════════$(NC)"
+	@echo "$(CYAN)Project Source Files Status:$(NC)"
+	@echo "$(CYAN)═══════════════════════════════════════════════════════$(NC)"
+	@echo "$(BLUE)C Sources ($(CDIR)):$(NC)"
+	@for file in $(CDIR)/*.c $(CDIR)/Makefile; do \
 		if [ -f $$file ]; then \
-			echo "  ✓ $$file"; \
+			echo "  $(GREEN)✓$(NC) $$file"; \
 		else \
-			echo "  ✗ $$file (missing)"; \
+			echo "  $(RED)✗$(NC) $$file (missing)"; \
 		fi; \
 	done
+	@echo "$(BLUE)ASM Sources ($(ASMDIR)):$(NC)"
+	@for file in $(ASMDIR)/*.s $(ASMDIR)/Makefile; do \
+		if [ -f $$file ]; then \
+			echo "  $(GREEN)✓$(NC) $$file"; \
+		else \
+			echo "  $(RED)✗$(NC) $$file (missing)"; \
+		fi; \
+	done
+
+# ============================================================================
+# DOCKER TARGETS
+# ============================================================================
+
+docker-build:
+	@echo "$(BLUE)Building Docker image...$(NC)"
+	docker build -f docker/Dockerfile -t dr_quine:latest .
+
+docker-run: docker-build
+	@echo "$(BLUE)Running Docker container...$(NC)"
+	docker run -it --rm -v "$(PWD)":/app dr_quine:latest
+
+docker-test: docker-build
+	@echo "$(BLUE)Running tests inside Docker...$(NC)"
+	docker run --rm -v "$(PWD)":/app dr_quine:latest \
+		bash -c "make fclean && make all && bash scripts/check_all.sh"
+
+docker-clean:
+	@echo "$(YELLOW)Cleaning Docker images...$(NC)"
+	-docker rmi dr_quine:latest dr_quine:dev 2>/dev/null || true
+
+# ============================================================================
+# HELP TARGET
+# ============================================================================
+
+help:
+	@echo "$(CYAN)Dr_Quine - Self-Replicating Quine Programs$(NC)"
+	@echo ""
+	@echo "Build targets:"
+	@echo "  $(GREEN)make all$(NC)      - Build all quine programs (C + ASM)"
+	@echo "  $(GREEN)make c$(NC)        - Build only C versions"
+	@echo "  $(GREEN)make asm$(NC)      - Build only Assembly versions"
+	@echo "  $(GREEN)make clean$(NC)    - Remove object files"
+	@echo "  $(GREEN)make fclean$(NC)   - Remove all generated files"
+	@echo "  $(GREEN)make re$(NC)       - Rebuild everything"
+	@echo ""
+	@echo "Quality assurance targets:"
+	@echo "  $(GREEN)make norm$(NC)     - Run norminette (école 42 norm check)"
+	@echo "  $(GREEN)make cppcheck$(NC) - Run static analysis (cppcheck)"
+	@echo "  $(GREEN)make test$(NC)     - Run all test suites (test_all.sh)"
+	@echo "  $(GREEN)make errors$(NC)   - Run crash/error tests (PDF §IV)"
+	@echo "  $(GREEN)make bonus$(NC)    - Test Python bonus implementation"
+	@echo "  $(GREEN)make qa$(NC)       - Full QA pipeline (norm+cppcheck+tests+relink)"
+	@echo "  $(GREEN)make cppcheck$(NC) - Run static analysis"
+	@echo "  $(GREEN)make show$(NC)     - Show source files status"
+	@echo "  $(GREEN)make help$(NC)     - Show this help"
+	@echo ""
+	@echo "Project structure:"
+	@echo "  $(BLUE)C/$(NC)            - C quine implementations + Makefile"
+	@echo "  $(BLUE)ASM/$(NC)          - x86-64 Assembly implementations + Makefile"
+	@echo "  $(BLUE)tests/$(NC)        - Automated test suites"
+	@echo "  $(BLUE)bonus/$(NC)        - Python bonus implementation"
 
 # ============================================================================
 # END OF MAKEFILE

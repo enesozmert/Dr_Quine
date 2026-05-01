@@ -28,7 +28,7 @@ Colleen'in Assembly (x86-64) versiyonu yazılacak. C versiyonuyla aynı işlevse
 ### Doğrulama Komutu
 ```bash
 ./colleen > output.s
-diff output.s src/colleen.s
+diff output.s ASM/Colleen.s
 # Sonuç: 0 (aynı olmalı)
 ```
 
@@ -84,7 +84,7 @@ syscall        ; rax içindeki numarayı çağır
 
 ### 1. Dosya Yapısını Oluştur
 
-**Dosya:** `src/colleen.s`
+**Dosya:** `ASM/Colleen.s`
 
 ```nasm
 ; ========================================================================
@@ -164,27 +164,27 @@ syscall             ; execute
 ### Adım 1: NASM ile Derleme
 
 ```bash
-nasm -f elf64 src/colleen.s -o obj/colleen.o
+nasm -f elf64 ASM/Colleen.s -o ASM/Colleen.o
 # -f elf64: 64-bit ELF format
 # -o: output dosyası
 ```
 
 **Kontrol:**
 ```bash
-ls -l obj/colleen.o
+ls -l ASM/Colleen.o
 ```
 
 ### Adım 2: Linking (Bağlama)
 
 ```bash
-ld obj/colleen.o -o colleen
+ld ASM/Colleen.o -o colleen
 # ld: GNU linker
 # Pure syscall'lar için C kütüphanesi gerekli değil
 ```
 
 **Alternatif (GCC ile linking):**
 ```bash
-gcc -o colleen obj/colleen.o
+gcc -o colleen ASM/Colleen.o
 ```
 
 ---
@@ -211,7 +211,7 @@ gcc -o colleen obj/colleen.o
 
 ```bash
 ./colleen > test_colleen.s
-diff test_colleen.s src/colleen.s
+diff test_colleen.s ASM/Colleen.s
 echo $?
 # Sonuç: 0 olmalı
 ```
@@ -220,7 +220,7 @@ echo $?
 
 ```bash
 ./colleen | xxd > /tmp/out.hex
-cat src/colleen.s | xxd > /tmp/src.hex
+cat ASM/Colleen.s | xxd > /tmp/src.hex
 diff /tmp/out.hex /tmp/src.hex
 ```
 
@@ -296,10 +296,10 @@ Assembly dosyaları `norminette` tarafından kontrol edilmez, ama yine de:
 
 ## Test Checklist
 
-- [ ] **NASM Derleme:** `nasm -f elf64 src/colleen.s -o obj/colleen.o` başarılı
-- [ ] **Linking:** `ld obj/colleen.o -o colleen` başarılı
+- [ ] **NASM Derleme:** `nasm -f elf64 ASM/Colleen.s -o ASM/Colleen.o` başarılı
+- [ ] **Linking:** `ld ASM/Colleen.o -o colleen` başarılı
 - [ ] **Çalışma:** `./colleen` crash etmez
-- [ ] **Çıktı Testi:** `./colleen > test.s && diff test.s src/colleen.s`
+- [ ] **Çıktı Testi:** `./colleen > test.s && diff test.s ASM/Colleen.s`
 - [ ] **Exit Code:** `echo $?` = 0
 - [ ] **Tekrar Çalıştırma:** Deterministic (aynı çıktı)
 
@@ -321,7 +321,7 @@ Assembly dosyaları `norminette` tarafından kontrol edilmez, ama yine de:
 
 | Özellik | C Versiyonu | Assembly Versiyonu |
 |---------|-------------|-------------------|
-| **Dosya** | src/colleen.c | src/colleen.s |
+| **Dosya** | C/Colleen.c | ASM/Colleen.s |
 | **Derleme** | gcc | nasm |
 | **Linking** | gcc | ld |
 | **Syscall'lar** | printf (library) | write (direct syscall) |
@@ -333,10 +333,10 @@ Assembly dosyaları `norminette` tarafından kontrol edilmez, ama yine de:
 ## Aşama Bitince Kontrolü
 
 Aşama 3 bittiğinde:
-- [ ] `src/colleen.s` mevcut ve çalışıyor
-- [ ] `./colleen > out.s && diff out.s src/colleen.s` = başarılı
-- [ ] `nasm -f elf64 src/colleen.s -o obj/colleen.o` = başarılı
-- [ ] `ld obj/colleen.o -o colleen` = başarılı
+- [ ] `ASM/Colleen.s` mevcut ve çalışıyor
+- [ ] `./colleen > out.s && diff out.s ASM/Colleen.s` = başarılı
+- [ ] `nasm -f elf64 ASM/Colleen.s -o ASM/Colleen.o` = başarılı
+- [ ] `ld ASM/Colleen.o -o colleen` = başarılı
 - [ ] Git commit yapıldı
 
 **Sonraki Aşama:** Aşama 4 - Grace (C Versiyonu)
