@@ -15,6 +15,8 @@ Bu dizin, Dr_Quine projesinde her aracın **Windows / Linux / macOS** için nas�
 | 3 | [CMake.md](CMake.md) | CMake ile derleme (3 OS, ASM Linux-only) |
 | 4 | [Makefile.md](Makefile.md) | Make ile derleme (kök + C/ + ASM/ bağımsız Makefile'lar) |
 | 5 | [Bonus.md](Bonus.md) | Python bonus çalıştırma (3 OS, tamamen taşınabilir) |
+| 6 | [Examples.md](Examples.md) | **PDF spec'in birebir örnekleri** (Colleen/Grace/Sully) — 4 ortam |
+| 7 | [Windows_Workflow.md](Windows_Workflow.md) | Windows için adım-adım Ninja akışı |
 
 ---
 

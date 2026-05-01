@@ -1,5 +1,10 @@
 # Dr_Quine — Proje Sunumu ve Teorisi
 
+> 📚 **Detaylı program analizleri için ayrı belgeler:**
+> - [Program1_Colleen.md](Program1_Colleen.md) — stdout quine (klasik)
+> - [Program2_Grace.md](Program2_Grace.md) — dosya yazma + makro tabanlı
+> - [Program3_Sully.md](Program3_Sully.md) — parametrik + self-compile + recursive
+
 ---
 
 ## Proje Hakkında
