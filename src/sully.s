@@ -4,14 +4,14 @@
 
 section .data
 	counter:	dd	8
-	fmt_filename:	db	"Sully_%d.s", 0
+	fmt_filename:	db	"output/Sully_%d.s", 0
 	quine_start:	db	"; sully.s - x86-64 Assembly Self-Replicating Quine with Counter", 10
-			db	"; Creates Sully_N.s files with decreasing counter (8 down to 0)", 10
+			db	"; Creates output/Sully_N.s files with decreasing counter (8 down to 0)", 10
 			db	"; nasm -f elf64 sully.s -o obj/sully.o && gcc obj/sully.o -o sully", 10, 10
 			db	"section .data", 10
 			db	9, "counter:", 9, "dd", 9, "8", 10
 			db	9, "fmt_filename:", 9, "db", 9, 34
-			db	"Sully_%d.s", 34, ", 0", 10
+			db	"output/Sully_%d.s", 34, ", 0", 10
 			db	9, "quine_start:", 9, "db", 9, 34
 			db	"; sully.s - x86-64 Assembly Self-Replicating Quine with Counter", 34, 10
 			db	9, 9, "db", 9, 34

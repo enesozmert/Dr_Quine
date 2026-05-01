@@ -135,6 +135,7 @@ fclean: clean
 	rm -f $(BINARIES)
 	rm -f *_kid.c *_kid.s
 	rm -rf $(OUTDIR)
+	rm -f Sully_*.c Sully_*.s
 
 re: fclean all
 
@@ -163,36 +164,32 @@ help:
 test: $(BINARIES)
 	@echo "$(BLUE)═══════════════════════════════════════════════════════$(NC)"
 	@echo "$(BLUE)Testing Colleen (C version)...$(NC)"
-	@./$(COLLEEN) > /tmp/colleen_c_out.c && \
-		diff -q /tmp/colleen_c_out.c $(SRCDIR)/colleen.c > /dev/null && \
+	@./$(COLLEEN) > $(OUTDIR)/colleen_c_out.c && \
+		diff -q $(OUTDIR)/colleen_c_out.c $(SRCDIR)/colleen.c > /dev/null && \
 		echo "$(GREEN)✓ Colleen C PASSED$(NC)" || echo "$(RED)✗ Colleen C FAILED$(NC)"
 	@echo ""
 	@echo "$(BLUE)Testing Colleen (Assembly version)...$(NC)"
-	@./$(COLLEEN_ASM) > /tmp/colleen_asm_out.s && \
-		diff -q /tmp/colleen_asm_out.s $(SRCDIR)/colleen.s > /dev/null && \
+	@./$(COLLEEN_ASM) > $(OUTDIR)/colleen_asm_out.s && \
+		diff -q $(OUTDIR)/colleen_asm_out.s $(SRCDIR)/colleen.s > /dev/null && \
 		echo "$(GREEN)✓ Colleen ASM PASSED$(NC)" || echo "$(RED)✗ Colleen ASM FAILED$(NC)"
 	@echo ""
 	@echo "$(BLUE)Testing Grace (C version)...$(NC)"
 	@./$(GRACE) && \
-		diff -q Grace_kid.c $(SRCDIR)/grace.c > /dev/null && \
+		diff -q $(OUTDIR)/Grace_kid.c $(SRCDIR)/grace.c > /dev/null && \
 		echo "$(GREEN)✓ Grace C PASSED$(NC)" || echo "$(RED)✗ Grace C FAILED$(NC)"
-	@rm -f Grace_kid.c
 	@echo ""
 	@echo "$(BLUE)Testing Grace (Assembly version)...$(NC)"
 	@./$(GRACE_ASM) && \
-		diff -q Grace_kid.s $(SRCDIR)/grace.s > /dev/null && \
+		diff -q $(OUTDIR)/Grace_kid.s $(SRCDIR)/grace.s > /dev/null && \
 		echo "$(GREEN)✓ Grace ASM PASSED$(NC)" || echo "$(RED)✗ Grace ASM FAILED$(NC)"
-	@rm -f Grace_kid.s
 	@echo ""
 	@echo "$(BLUE)Testing Sully (C version)...$(NC)"
-	@./$(SULLY) && test -f Sully_7.c && \
+	@./$(SULLY) && test -f $(OUTDIR)/Sully_7.c && \
 		echo "$(GREEN)✓ Sully C PASSED$(NC)" || echo "$(RED)✗ Sully C FAILED$(NC)"
-	@rm -f Sully_*.c
 	@echo ""
 	@echo "$(BLUE)Testing Sully (Assembly version)...$(NC)"
-	@./$(SULLY_ASM) && test -f Sully_7.s && \
+	@./$(SULLY_ASM) && test -f $(OUTDIR)/Sully_7.s && \
 		echo "$(GREEN)✓ Sully ASM PASSED$(NC)" || echo "$(RED)✗ Sully ASM FAILED$(NC)"
-	@rm -f Sully_*.s
 	@echo ""
 	@echo "$(BLUE)═══════════════════════════════════════════════════════$(NC)"
 	@echo "$(GREEN)[✓] All tests completed!$(NC)"

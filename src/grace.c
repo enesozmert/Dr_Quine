@@ -55,7 +55,7 @@ int	main(void)
 		"\theader = %c%s%c;\n"
 		"\tbody = %c%s%c;\n"
 		"\tfooter = %c%s%c;\n"
-		"\tfp = fopen(%cGrace_kid.c%c, %cw%c);\n"
+		"\tfp = fopen(%coutput/Grace_kid.c%c, %cw%c);\n"
 		"\tif (fp == NULL)\n"
 		"\t\treturn (1);\n"
 		"\tfprintf(fp, header);\n"
@@ -66,7 +66,7 @@ int	main(void)
 		"\treturn (0);\n}\n";
 	footer = "";
 
-	fp = fopen("Grace_kid.c", "w");
+	fp = fopen("output/Grace_kid.c", "w");
 	if (fp == NULL)
 		return (1);
 	fprintf(fp, header);

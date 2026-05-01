@@ -3,13 +3,13 @@
 ; nasm -f elf64 grace.s -o obj/grace.o && ld obj/grace.o -o grace
 
 section .data
-	filename:	db	"Grace_kid.s", 0
+	filename:	db	"output/Grace_kid.s", 0
 	quine:		db	"; grace.s - x86-64 Assembly Quine with File Writing", 10
-			db	"; Writes own source code to Grace_kid.s file", 10
+			db	"; Writes own source code to output/Grace_kid.s file", 10
 			db	"; nasm -f elf64 grace.s -o obj/grace.o && ld obj/grace.o -o grace", 10, 10
 			db	"section .data", 10
 			db	9, "filename:", 9, "db", 9, 34
-			db	"Grace_kid.s", 34, ", 0", 10
+			db	"output/Grace_kid.s", 34, ", 0", 10
 			db	9, "quine:", 9, 9, "db", 9, 34
 			db	"; grace.s - x86-64 Assembly Quine with File Writing", 34, 10
 			db	9, 9, "db", 9, 34
@@ -19,8 +19,8 @@ section .data
 			db	9, 9, "db", 9, 34
 			db	"section .data", 34, 10
 			db	9, 9, "db", 9, 34
-			db	9, "filename:", 9, "db", 9, 34, 34
-			db	", 0", 34, 10
+			db	9, "filename:", 9, "db", 9, 34
+			db	"output/Grace_kid.s", 34, ", 0", 34, 10
 			db	9, 9, "db", 9, 34
 			db	9, "quine:", 9, 9, "db", 9, 34, 34, 10
 			db	9, 9, "db", 9, 34

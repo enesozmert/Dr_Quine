@@ -64,7 +64,7 @@ int	main(void)
 		"\tif (counter == 0)\n"
 		"\t\treturn (0);\n"
 		"\tcounter--;\n"
-		"\tsprintf(filename, %cSully_%%d.c%c, counter);\n"
+		"\tsprintf(filename, %coutput/Sully_%%d.c%c, counter);\n"
 		"\tfp = fopen(filename, %cw%c);\n"
 		"\tif (fp == NULL)\n"
 		"\t\treturn (1);\n"
@@ -80,7 +80,7 @@ int	main(void)
 	if (counter == 0)
 		return (0);
 	counter--;
-	sprintf(filename, "Sully_%d.c", counter);
+	sprintf(filename, "output/Sully_%d.c", counter);
 	fp = fopen(filename, "w");
 	if (fp == NULL)
 		return (1);
