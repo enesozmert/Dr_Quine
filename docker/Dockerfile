@@ -21,6 +21,7 @@ ENV TZ=Europe/Istanbul
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
+    clang \
     make \
     nasm \
     git \
@@ -30,6 +31,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cppcheck \
     valgrind \
     gdb \
+    lldb \
+    clang-format \
     diffutils \
     coreutils \
     bash \
