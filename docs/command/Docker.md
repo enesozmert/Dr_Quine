@@ -225,6 +225,20 @@ docker compose -f docker/docker-compose.yml build --no-cache
 docker ps
 ```
 
+### Build appears stuck at apt-get
+
+```bash
+# Show apt output instead of BuildKit's compact progress UI
+docker compose -f docker/docker-compose.yml build --progress=plain
+
+# Check whether Docker can start a fresh Ubuntu container at all
+docker run --rm ubuntu:22.04 bash -lc "echo ok"
+```
+
+If the second command stays in `Created` state or never prints `ok`, the problem is Docker
+Desktop/WSL networking or engine state, not this project's Dockerfile. Restart Docker
+Desktop, then retry the build command above.
+
 ### Permission denied
 
 ```bash
