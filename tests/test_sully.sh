@@ -4,8 +4,8 @@
 # ============================================================================
 # PDF spec (X >= 0 enforced strictly: no Sully_-1 artifacts):
 #   counter starts at 5 (int i = 5; / ;i=5)
-#   ./Sully creates chain: Sully_4 → Sully_3 → ... → Sully_0, then stops
-#   ls -al | grep Sully | wc -l == 11  (Sully + Sully_4..0 with .c/.s + binary)
+#   ./Sully creates chain: Sully_5 → Sully_4 → ... → Sully_0, then stops
+#   ls -al | grep Sully | wc -l == 13  (Sully + Sully_5..0 with .c/.s + binary)
 #   diff Sully.c Sully_0.c     → only 'int i = 5'/'int i = 0' line differs
 #   diff Sully_3.c Sully_2.c   → only 'int i = 3'/'int i = 2' line differs
 
@@ -28,16 +28,16 @@ echo -e "${BLUE}╚════════════════════�
 echo ""
 
 # ---------------- Sully (C) ----------------
-echo -e "${YELLOW}[TEST 1] Sully (C) - first child file is Sully_4.c (counter 5→4)${NC}"
+echo -e "${YELLOW}[TEST 1] Sully (C) - first child file is Sully_5.c (counter starts at 5)${NC}"
 if [ -x "$OUT_C/Sully" ]; then
 	cd "$OUT_C"
-	rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4
+	rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5
 	./Sully > /dev/null 2>&1
-	if [ -f Sully_4.c ]; then
-		echo -e "${GREEN}✓ PASS: Sully_4.c created${NC}"
+	if [ -f Sully_5.c ]; then
+		echo -e "${GREEN}✓ PASS: Sully_5.c created${NC}"
 		PASS=$((PASS+1))
 	else
-		echo -e "${RED}✗ FAIL: Sully_4.c not created${NC}"
+		echo -e "${RED}✗ FAIL: Sully_5.c not created${NC}"
 		FAIL=$((FAIL+1))
 	fi
 else
@@ -45,11 +45,11 @@ else
 fi
 echo ""
 
-echo -e "${YELLOW}[TEST 2] Sully (C) - full chain: Sully_4 down to Sully_0, no Sully_-1${NC}"
+echo -e "${YELLOW}[TEST 2] Sully (C) - full chain: Sully_5 down to Sully_0, no Sully_-1${NC}"
 if [ -x "$OUT_C/Sully" ]; then
 	cd "$OUT_C"
 	chain_ok=1
-	for i in 4 3 2 1 0; do
+	for i in 5 4 3 2 1 0; do
 		if [ ! -f "Sully_${i}.c" ]; then
 			echo -e "${RED}✗ FAIL: Sully_${i}.c missing${NC}"
 			FAIL=$((FAIL+1))
@@ -63,7 +63,7 @@ if [ -x "$OUT_C/Sully" ]; then
 		chain_ok=0
 	fi
 	if [ "$chain_ok" = "1" ]; then
-		echo -e "${GREEN}✓ PASS: 5 .c files (Sully_4 → Sully_0)${NC}"
+		echo -e "${GREEN}✓ PASS: 6 .c files (Sully_5 → Sully_0)${NC}"
 		PASS=$((PASS+1))
 	fi
 else
@@ -71,16 +71,16 @@ else
 fi
 echo ""
 
-echo -e "${YELLOW}[TEST 3] Sully (C) - file count: ls grep Sully wc -l == 11${NC}"
+echo -e "${YELLOW}[TEST 3] Sully (C) - file count: ls grep Sully wc -l == 13${NC}"
 if [ -x "$OUT_C/Sully" ]; then
 	cd "$OUT_C"
 	# Exclude Sully.c source mirror (build artifact, not part of generated chain)
 	COUNT=$(ls -1 | grep -E '^Sully(\.|$|_)' | grep -v '^Sully\.c$' | wc -l)
-	if [ "$COUNT" = "11" ]; then
-		echo -e "${GREEN}✓ PASS: count == 11${NC}"
+	if [ "$COUNT" = "13" ]; then
+		echo -e "${GREEN}✓ PASS: count == 13${NC}"
 		PASS=$((PASS+1))
 	else
-		echo -e "${RED}✗ FAIL: count == $COUNT (expected 11)${NC}"
+		echo -e "${RED}✗ FAIL: count == $COUNT (expected 13)${NC}"
 		FAIL=$((FAIL+1))
 	fi
 else
@@ -127,10 +127,10 @@ fi
 echo ""
 
 # ---------------- Sully (ASM) ----------------
-echo -e "${YELLOW}[TEST 6] Sully (ASM) - file count: ls grep Sully wc -l == 11, no Sully_-1${NC}"
+echo -e "${YELLOW}[TEST 6] Sully (ASM) - file count: ls grep Sully wc -l == 13, no Sully_-1${NC}"
 if [ -x "$OUT_ASM/sully" ]; then
 	cd "$OUT_ASM"
-	rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4
+	rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5
 	cp Sully.s /tmp/sully_self.s 2>/dev/null
 	# PDF style: nasm + gcc + ./Sully
 	nasm -f elf64 Sully.s -o Sully.o 2>/dev/null
@@ -141,11 +141,11 @@ if [ -x "$OUT_ASM/sully" ]; then
 	if [ -f "Sully_-1.s" ]; then
 		echo -e "${RED}✗ FAIL: Sully_-1.s must NOT exist${NC}"
 		FAIL=$((FAIL+1))
-	elif [ "$COUNT" = "11" ]; then
-		echo -e "${GREEN}✓ PASS: count == 11${NC}"
+	elif [ "$COUNT" = "13" ]; then
+		echo -e "${GREEN}✓ PASS: count == 13${NC}"
 		PASS=$((PASS+1))
 	else
-		echo -e "${RED}✗ FAIL: count == $COUNT (expected 11)${NC}"
+		echo -e "${RED}✗ FAIL: count == $COUNT (expected 13)${NC}"
 		FAIL=$((FAIL+1))
 	fi
 else

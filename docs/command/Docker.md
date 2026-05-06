@@ -14,19 +14,19 @@ This guide explains how to build, run, and test Dr_Quine using Docker.
 
 ```bash
 # Build the image (first time only, ~2-3 minutes)
-docker build -t dr_quine:latest .
+docker build -f docker/Dockerfile -t dr_quine:latest .
 
-# Or use docker-compose (recommended)
-docker-compose build
+# Or use Docker Compose (recommended)
+docker compose -f docker/docker-compose.yml build
 ```
 
 ### Run the Container
 
 ```bash
 # Start interactive shell
-docker-compose run dr-quine
+docker compose -f docker/docker-compose.yml run dr-quine
 
-# Or without docker-compose
+# Or without Compose
 docker run -it --rm -v $(pwd):/app dr_quine:latest bash
 ```
 
@@ -54,10 +54,10 @@ make fclean
 
 ```bash
 # Build with specific tag
-docker build -t dr_quine:v1.0 .
+docker build -f docker/Dockerfile -t dr_quine:v1.0 .
 
 # Build without cache
-docker build --no-cache -t dr_quine:latest .
+docker build --no-cache -f docker/Dockerfile -t dr_quine:latest .
 ```
 
 ### Run
@@ -116,39 +116,39 @@ services:
 
 Usage:
 ```bash
-docker-compose run dr-quine
-docker-compose run dr-quine make all
-docker-compose run dr-quine make test
+docker compose -f docker/docker-compose.yml run dr-quine
+docker compose -f docker/docker-compose.yml run dr-quine make all
+docker compose -f docker/docker-compose.yml run dr-quine make test
 ```
 
 #### 2. Development with Debugging (dr-quine-dev)
 
 ```bash
 # Use development profile
-docker-compose --profile dev run dr-quine-dev
+docker compose -f docker/docker-compose.yml --profile dev run dr-quine-dev
 
 # Debug with GDB
-docker-compose --profile dev run dr-quine-dev gdb ./Colleen
+docker compose -f docker/docker-compose.yml --profile dev run dr-quine-dev gdb ./Colleen
 ```
 
 ### Common Docker Compose Commands
 
 ```bash
 # Start service
-docker-compose run dr-quine bash
+docker compose -f docker/docker-compose.yml run dr-quine bash
 
 # Build and run
-docker-compose up --build
+docker compose -f docker/docker-compose.yml up --build
 
 # Execute command
-docker-compose run dr-quine make test
+docker compose -f docker/docker-compose.yml run dr-quine make test
 
 # View logs
-docker-compose logs -f
+docker compose -f docker/docker-compose.yml logs -f
 
 # Clean up
-docker-compose down
-docker-compose down -v  # Remove volumes too
+docker compose -f docker/docker-compose.yml down
+docker compose -f docker/docker-compose.yml down -v  # Remove volumes too
 ```
 
 ## Testing Workflow
@@ -157,7 +157,7 @@ docker-compose down -v  # Remove volumes too
 
 ```bash
 # Start container
-docker-compose run dr-quine
+docker compose -f docker/docker-compose.yml run dr-quine
 
 # Inside container:
 cd /app
@@ -219,7 +219,7 @@ valgrind --leak-check=full ./Colleen > /dev/null
 docker images | grep dr_quine
 
 # Rebuild image
-docker-compose build --no-cache
+docker compose -f docker/docker-compose.yml build --no-cache
 
 # Check Docker daemon
 docker ps
@@ -232,7 +232,7 @@ docker ps
 docker run --user $(id -u):$(id -g) ...
 
 # Or use sudo
-sudo docker-compose run dr-quine
+sudo docker compose -f docker/docker-compose.yml run dr-quine
 ```
 
 ### Changes not reflected
@@ -242,7 +242,7 @@ sudo docker-compose run dr-quine
 docker run -v $(pwd):/app:rw ...
 
 # Rebuild if Dockerfile changed
-docker-compose build --no-cache
+docker compose -f docker/docker-compose.yml build --no-cache
 
 # Clear build artifacts inside container
 make fclean
@@ -267,10 +267,10 @@ docker system df
 
 ```bash
 # Use BuildKit for faster builds
-DOCKER_BUILDKIT=1 docker build -t dr_quine .
+DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile -t dr_quine .
 
 # Use build cache
-docker build -t dr_quine . (cache is used automatically)
+docker build -f docker/Dockerfile -t dr_quine . (cache is used automatically)
 
 # Parallel compilation
 make -j4  # Inside container

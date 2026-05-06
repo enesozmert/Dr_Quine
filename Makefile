@@ -33,7 +33,7 @@ OUTDIR		=	output
 # PHONY TARGETS
 # ============================================================================
 
-.PHONY: all clean fclean re help test errors qa c asm bonus norm cppcheck show \
+.PHONY: all clean fclean re help test errors pdf qa c asm bonus norm cppcheck show \
         docker-build docker-run docker-test docker-clean
 
 # ============================================================================
@@ -101,6 +101,25 @@ errors: all
 	@echo "$(CYAN)Running Crash/Error Handling Tests...$(NC)"
 	@echo "$(CYAN)═══════════════════════════════════════════════════════$(NC)"
 	@bash $(TESTDIR)/test_errors.sh
+
+# ============================================================================
+# PDF EXAMPLE COMPLIANCE TESTS
+# ============================================================================
+
+pdf: all
+	@echo "$(CYAN)═══════════════════════════════════════════════════════$(NC)"
+	@echo "$(CYAN)Running PDF Example Compliance Tests...$(NC)"
+	@echo "$(CYAN)═══════════════════════════════════════════════════════$(NC)"
+	@if command -v docker >/dev/null 2>&1; then \
+		if ! docker image inspect dr_quine:latest >/dev/null 2>&1; then \
+			echo "$(YELLOW)[i] dr_quine:latest not found, building image...$(NC)"; \
+			docker build -f docker/Dockerfile -t dr_quine:latest .; \
+		fi; \
+		docker run --rm -v "$(PWD)":/app -w /app dr_quine:latest bash /app/scripts/pdf_compliance_test.sh; \
+	else \
+		echo "$(YELLOW)[i] docker not found, running host script$(NC)"; \
+		bash scripts/pdf_compliance_test.sh; \
+	fi
 
 # ============================================================================
 # FULL QA PIPELINE (norm + cppcheck + tests + relink check)
@@ -205,6 +224,7 @@ help:
 	@echo "  $(GREEN)make cppcheck$(NC) - Run static analysis (cppcheck)"
 	@echo "  $(GREEN)make test$(NC)     - Run all test suites (test_all.sh)"
 	@echo "  $(GREEN)make errors$(NC)   - Run crash/error tests (PDF §IV)"
+	@echo "  $(GREEN)make pdf$(NC)      - Run PDF command-sequence compliance test"
 	@echo "  $(GREEN)make bonus$(NC)    - Test Python bonus implementation"
 	@echo "  $(GREEN)make qa$(NC)       - Full QA pipeline (norm+cppcheck+tests+relink)"
 	@echo "  $(GREEN)make cppcheck$(NC) - Run static analysis"

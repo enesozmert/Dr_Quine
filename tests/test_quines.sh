@@ -73,19 +73,19 @@ else
 fi
 
 # --- Sully (C) ---
-echo -e "\n${YELLOW}=== Sully (C) — count == 11, no Sully_-1 ===${NC}"
+echo -e "\n${YELLOW}=== Sully (C) — count == 13, no Sully_-1 ===${NC}"
 if [ -x "$OUT_C/Sully" ]; then
-    cd "$OUT_C" && rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4
+    cd "$OUT_C" && rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5
     ./Sully > /dev/null 2>&1
-    # X >= 0 enforced strictly: chain stops at Sully_0 (no Sully_-1.* artifacts).
-    # 1 (Sully) + 5 .c (Sully_4..0) + 5 binaries = 11. Sully.c excluded as source mirror.
+    # PDF-style chain starts from Sully_5 and stops at Sully_0.
+    # 1 (Sully) + 6 .c (Sully_5..0) + 6 binaries = 13. Sully.c excluded as source mirror.
     COUNT=$(ls -1 | grep -E '^Sully(\.|$|_)' | grep -v '^Sully\.c$' | wc -l)
     if [ -f "Sully_-1.c" ]; then
         fail "Sully (C): Sully_-1.c must NOT exist"
-    elif [ "$COUNT" = "11" ]; then
-        pass "Sully (C) count == 11"
+    elif [ "$COUNT" = "13" ]; then
+        pass "Sully (C) count == 13"
     else
-        fail "Sully (C) count = $COUNT (expected 11)"
+        fail "Sully (C) count = $COUNT (expected 13)"
     fi
     diff Sully.c Sully_0.c | grep -q 'int i = 5' && diff Sully.c Sully_0.c | grep -q 'int i = 0' \
         && pass "Sully.c vs Sully_0.c: only 'int i' differs" \
@@ -98,10 +98,10 @@ else
 fi
 
 # --- Sully (ASM) ---
-echo -e "\n${YELLOW}=== Sully (ASM) — count == 11, no Sully_-1 ===${NC}"
+echo -e "\n${YELLOW}=== Sully (ASM) — count == 13, no Sully_-1 ===${NC}"
 if [ -x "$OUT_ASM/sully" ]; then
     cd "$OUT_ASM"
-    rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4
+    rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5
     # PDF: nasm -f elf64 ../Sully.s -o Sully.o && gcc Sully.o -o Sully ; ./Sully
     cp Sully.s /tmp/sully_self.s
     nasm -f elf64 Sully.s -o Sully.o 2>/dev/null
@@ -110,10 +110,10 @@ if [ -x "$OUT_ASM/sully" ]; then
     COUNT=$(ls -1 | grep -E '^Sully(\.|$|_)' | grep -v '^Sully\.s$' | grep -v '^sully$' | wc -l)
     if [ -f "Sully_-1.s" ]; then
         fail "Sully (ASM): Sully_-1.s must NOT exist"
-    elif [ "$COUNT" = "11" ]; then
-        pass "Sully (ASM) count == 11"
+    elif [ "$COUNT" = "13" ]; then
+        pass "Sully (ASM) count == 13"
     else
-        fail "Sully (ASM) count = $COUNT (expected 11)"
+        fail "Sully (ASM) count = $COUNT (expected 13)"
     fi
     diff Sully.s Sully_0.s | grep -q ';i=5' && diff Sully.s Sully_0.s | grep -q ';i=0' \
         && pass "Sully.s vs Sully_0.s: only ';i=' differs" \

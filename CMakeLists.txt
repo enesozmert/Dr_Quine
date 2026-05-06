@@ -221,6 +221,25 @@ add_custom_target(test_all
     COMMENT "Running all test suites (test_all.sh)..."
 )
 
+# PDF command-sequence compliance test script
+find_program(DOCKER_EXECUTABLE NAMES docker)
+if(DOCKER_EXECUTABLE)
+    add_custom_target(pdf_compliance_test
+        COMMAND ${DOCKER_EXECUTABLE} build -f "${PROJECT_SOURCE_DIR}/docker/Dockerfile" -t dr_quine:latest "${PROJECT_SOURCE_DIR}"
+        COMMAND ${DOCKER_EXECUTABLE} run --rm -v "${PROJECT_SOURCE_DIR}:/app" -w /app dr_quine:latest bash /app/scripts/pdf_compliance_test.sh
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        DEPENDS Colleen Grace Sully
+        COMMENT "Building dr_quine:latest and running PDF command-sequence compliance script in Docker..."
+    )
+else()
+    add_custom_target(pdf_compliance_test
+        COMMAND ${BASH_EXECUTABLE} ${PROJECT_SOURCE_DIR}/scripts/pdf_compliance_test.sh
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        DEPENDS Colleen Grace Sully
+        COMMENT "Docker not found; running PDF command-sequence compliance script on host..."
+    )
+endif()
+
 # Full QA pipeline: build + norm + cppcheck + tests + relink check
 add_custom_target(qa
     COMMAND ${BASH_EXECUTABLE} ${PROJECT_SOURCE_DIR}/scripts/check_all.sh

@@ -13,31 +13,39 @@ LABEL version="2.0"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Istanbul
+ARG INSTALL_DEBUG_TOOLS=false
 
 # ============================================================================
-# Toolchain: gcc, NASM, make, cmake, python3, norminette, cppcheck, valgrind
+# Toolchain: gcc, clang, NASM, make, python3, norminette, cppcheck
 # ============================================================================
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    gcc \
-    clang \
-    make \
-    nasm \
-    git \
-    cmake \
-    python3 \
-    python3-pip \
-    cppcheck \
-    valgrind \
-    gdb \
-    lldb \
-    clang-format \
-    diffutils \
-    coreutils \
-    bash \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+RUN set -eux; \
+    echo 'Acquire::Retries "5";' > /etc/apt/apt.conf.d/80-retries; \
+    echo 'Acquire::ForceIPv4 "true";' > /etc/apt/apt.conf.d/99-force-ipv4; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        gcc \
+        clang \
+        make \
+        nasm \
+        python3 \
+        python3-pip \
+        cppcheck \
+        diffutils \
+        coreutils \
+        bash \
+        ca-certificates; \
+    if [ "$INSTALL_DEBUG_TOOLS" = "true" ]; then \
+        apt-get install -y --no-install-recommends \
+            git \
+            cmake \
+            valgrind \
+            gdb \
+            lldb \
+            clang-format; \
+    fi; \
+    rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --no-cache-dir norminette
 

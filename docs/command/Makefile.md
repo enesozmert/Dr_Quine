@@ -22,6 +22,7 @@ make all          # C + ASM tüm hedefleri build eder -> output/C, output/ASM
 make c            # Yalnız C: output/C/{Colleen,Grace,Sully}
 make asm          # Yalnız ASM: output/ASM/{colleen,grace,sully}
 make test         # Test takımı (test_quines.sh)
+make pdf          # PDF komut akışı uyumluluk testi (scripts/pdf_compliance_test.sh)
 make clean        # .o dosyaları
 make fclean       # output/ dahil tüm üretilen dosyalar
 make re           # fclean + all
@@ -108,6 +109,7 @@ Her Makefile şu standart hedefleri içerir:
 | `clean` | `.o` ve geçici dosyaları siler |
 | `fclean` | `clean` + binary'ler ve runtime dosyaları |
 | `re` | `fclean` + `all` |
+| `pdf` | PDF komut akışı uyumluluk script'ini çalıştırır |
 
 `Makefile`'lar:
 - Kök: `Makefile` — `C/` ve `ASM/`'a delegate

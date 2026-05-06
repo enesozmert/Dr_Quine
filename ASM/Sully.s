@@ -22,6 +22,7 @@ extern fopen
 extern fwrite
 extern fclose
 extern system
+extern access
 global main
 
 main:
@@ -32,7 +33,6 @@ main:
 
     movzx eax, byte [rel src + 3]
     sub eax, '0'
-    sub eax, 1
     mov ebx, eax
 
     test ebx, ebx
@@ -43,6 +43,24 @@ main:
     mov edx, ebx
     xor eax, eax
     call sprintf
+
+    lea rdi, [rel fname]
+    xor esi, esi
+    call access
+    test eax, eax
+    jne .open_file
+
+    sub ebx, 1
+    test ebx, ebx
+    js .done
+
+    lea rdi, [rel fname]
+    lea rsi, [rel fname_fmt]
+    mov edx, ebx
+    xor eax, eax
+    call sprintf
+
+.open_file:
 
     lea rdi, [rel fname]
     lea rsi, [rel mode_w]

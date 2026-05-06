@@ -90,7 +90,7 @@ else
 fi
 
 if [ -x "$OUT_C/Sully" ]; then
-	cd "$OUT_C" && rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4
+	cd "$OUT_C" && rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5
 	check_no_crash "Sully (C)" "$OUT_C/Sully"
 else
 	skip "Sully (C) not built"
@@ -110,7 +110,7 @@ else
 fi
 
 if [ -x "$OUT_ASM/sully" ]; then
-	cd "$OUT_ASM" && rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4
+	cd "$OUT_ASM" && rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5
 	# Need /tmp/sully_self.s for incbin
 	cp "$OUT_ASM/Sully.s" /tmp/sully_self.s 2>/dev/null
 	# Sully ASM needs to be built via make in workdir; just smoke test the binary
@@ -164,7 +164,7 @@ if [ -x "$OUT_C/Grace" ]; then
 	check_no_crash "Grace (C) with garbage args" "$OUT_C/Grace" "x" "y"
 fi
 if [ -x "$OUT_C/Sully" ]; then
-	cd "$OUT_C" && rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4
+	cd "$OUT_C" && rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5
 	check_no_crash "Sully (C) with garbage args" "$OUT_C/Sully" "garbage"
 fi
 if [ -x "$OUT_ASM/colleen" ]; then
@@ -274,8 +274,8 @@ echo ""
 # ============================================================================
 # Cleanup
 # ============================================================================
-cd "$OUT_C" 2>/dev/null && rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Grace_kid.c colleen_test_out 2>/dev/null
-cd "$OUT_ASM" 2>/dev/null && rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Grace_kid.s 2>/dev/null
+cd "$OUT_C" 2>/dev/null && rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5 Grace_kid.c colleen_test_out 2>/dev/null
+cd "$OUT_ASM" 2>/dev/null && rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5 Grace_kid.s 2>/dev/null
 cd "$BONUS" 2>/dev/null && rm -f sully_*.py grace_kid.py 2>/dev/null
 
 # ============================================================================

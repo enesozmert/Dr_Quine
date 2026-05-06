@@ -173,6 +173,7 @@ Build çıktısı:
 | `norm` | Norminette çağrısı |
 | `cppcheck` | Statik analiz |
 | `test_quines` | Test takımı |
+| `pdf_compliance_test` | PDF komut akışı uyumluluk script'i (Docker `dr_quine:latest` ile) |
 
 ---
 
