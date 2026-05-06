@@ -35,6 +35,9 @@ main:
     sub eax, 1
     mov ebx, eax
 
+    test ebx, ebx
+    js .done
+
     lea rdi, [rel fname]
     lea rsi, [rel fname_fmt]
     mov edx, ebx
@@ -69,9 +72,6 @@ main:
 
     mov rdi, r12
     call fclose
-
-    test ebx, ebx
-    js .done
 
     lea rdi, [rel cmd]
     lea rsi, [rel copy_fmt]

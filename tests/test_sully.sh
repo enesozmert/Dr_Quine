@@ -2,10 +2,10 @@
 # ============================================================================
 # test_sully.sh - Sully Quine Detail Tests
 # ============================================================================
-# PDF spec:
+# PDF spec (X >= 0 enforced strictly: no Sully_-1 artifacts):
 #   counter starts at 5 (int i = 5; / ;i=5)
-#   ./Sully creates chain: Sully_4 → Sully_3 → ... → Sully_0 → Sully_-1.c (no exec)
-#   ls -al | grep Sully | wc -l == 13
+#   ./Sully creates chain: Sully_4 → Sully_3 → ... → Sully_0, then stops
+#   ls -al | grep Sully | wc -l == 11  (Sully + Sully_4..0 with .c/.s + binary)
 #   diff Sully.c Sully_0.c     → only 'int i = 5'/'int i = 0' line differs
 #   diff Sully_3.c Sully_2.c   → only 'int i = 3'/'int i = 2' line differs
 
@@ -45,18 +45,25 @@ else
 fi
 echo ""
 
-echo -e "${YELLOW}[TEST 2] Sully (C) - full chain: Sully_4 down to Sully_-1.c${NC}"
+echo -e "${YELLOW}[TEST 2] Sully (C) - full chain: Sully_4 down to Sully_0, no Sully_-1${NC}"
 if [ -x "$OUT_C/Sully" ]; then
 	cd "$OUT_C"
-	for i in 4 3 2 1 0 -1; do
+	chain_ok=1
+	for i in 4 3 2 1 0; do
 		if [ ! -f "Sully_${i}.c" ]; then
 			echo -e "${RED}✗ FAIL: Sully_${i}.c missing${NC}"
 			FAIL=$((FAIL+1))
+			chain_ok=0
 			break
 		fi
 	done
-	if [ -f Sully_-1.c ] && [ -f Sully_0.c ]; then
-		echo -e "${GREEN}✓ PASS: 6 .c files (Sully_4 → Sully_-1)${NC}"
+	if [ -f "Sully_-1.c" ]; then
+		echo -e "${RED}✗ FAIL: Sully_-1.c must NOT exist${NC}"
+		FAIL=$((FAIL+1))
+		chain_ok=0
+	fi
+	if [ "$chain_ok" = "1" ]; then
+		echo -e "${GREEN}✓ PASS: 5 .c files (Sully_4 → Sully_0)${NC}"
 		PASS=$((PASS+1))
 	fi
 else
@@ -64,16 +71,16 @@ else
 fi
 echo ""
 
-echo -e "${YELLOW}[TEST 3] Sully (C) - PDF count: ls grep Sully wc -l == 13${NC}"
+echo -e "${YELLOW}[TEST 3] Sully (C) - file count: ls grep Sully wc -l == 11${NC}"
 if [ -x "$OUT_C/Sully" ]; then
 	cd "$OUT_C"
 	# Exclude Sully.c source mirror (build artifact, not part of generated chain)
 	COUNT=$(ls -1 | grep -E '^Sully(\.|$|_)' | grep -v '^Sully\.c$' | wc -l)
-	if [ "$COUNT" = "13" ]; then
-		echo -e "${GREEN}✓ PASS: count == 13${NC}"
+	if [ "$COUNT" = "11" ]; then
+		echo -e "${GREEN}✓ PASS: count == 11${NC}"
 		PASS=$((PASS+1))
 	else
-		echo -e "${RED}✗ FAIL: count == $COUNT (expected 13)${NC}"
+		echo -e "${RED}✗ FAIL: count == $COUNT (expected 11)${NC}"
 		FAIL=$((FAIL+1))
 	fi
 else
@@ -120,7 +127,7 @@ fi
 echo ""
 
 # ---------------- Sully (ASM) ----------------
-echo -e "${YELLOW}[TEST 6] Sully (ASM) - PDF count: ls grep Sully wc -l == 13${NC}"
+echo -e "${YELLOW}[TEST 6] Sully (ASM) - file count: ls grep Sully wc -l == 11, no Sully_-1${NC}"
 if [ -x "$OUT_ASM/sully" ]; then
 	cd "$OUT_ASM"
 	rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4
@@ -131,11 +138,14 @@ if [ -x "$OUT_ASM/sully" ]; then
 	./Sully > /dev/null 2>&1
 	# Exclude Sully.s and the lowercase 'sully' (build artifact)
 	COUNT=$(ls -1 | grep -E '^Sully(\.|$|_)' | grep -v '^Sully\.s$' | wc -l)
-	if [ "$COUNT" = "13" ]; then
-		echo -e "${GREEN}✓ PASS: count == 13${NC}"
+	if [ -f "Sully_-1.s" ]; then
+		echo -e "${RED}✗ FAIL: Sully_-1.s must NOT exist${NC}"
+		FAIL=$((FAIL+1))
+	elif [ "$COUNT" = "11" ]; then
+		echo -e "${GREEN}✓ PASS: count == 11${NC}"
 		PASS=$((PASS+1))
 	else
-		echo -e "${RED}✗ FAIL: count == $COUNT (expected 13)${NC}"
+		echo -e "${RED}✗ FAIL: count == $COUNT (expected 11)${NC}"
 		FAIL=$((FAIL+1))
 	fi
 else

@@ -73,17 +73,19 @@ else
 fi
 
 # --- Sully (C) ---
-echo -e "\n${YELLOW}=== Sully (C) — PDF count == 13 ===${NC}"
+echo -e "\n${YELLOW}=== Sully (C) — count == 11, no Sully_-1 ===${NC}"
 if [ -x "$OUT_C/Sully" ]; then
     cd "$OUT_C" && rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4
     ./Sully > /dev/null 2>&1
-    # PDF formula: 1 (Sully) + 6 .c + 6 binaries = 13. Sully.c is also in output/C, +1 = 14.
-    # We exclude Sully.c (source mirror) for the PDF check.
+    # X >= 0 enforced strictly: chain stops at Sully_0 (no Sully_-1.* artifacts).
+    # 1 (Sully) + 5 .c (Sully_4..0) + 5 binaries = 11. Sully.c excluded as source mirror.
     COUNT=$(ls -1 | grep -E '^Sully(\.|$|_)' | grep -v '^Sully\.c$' | wc -l)
-    if [ "$COUNT" = "13" ]; then
-        pass "Sully (C) count == 13"
+    if [ -f "Sully_-1.c" ]; then
+        fail "Sully (C): Sully_-1.c must NOT exist"
+    elif [ "$COUNT" = "11" ]; then
+        pass "Sully (C) count == 11"
     else
-        fail "Sully (C) count = $COUNT (expected 13)"
+        fail "Sully (C) count = $COUNT (expected 11)"
     fi
     diff Sully.c Sully_0.c | grep -q 'int i = 5' && diff Sully.c Sully_0.c | grep -q 'int i = 0' \
         && pass "Sully.c vs Sully_0.c: only 'int i' differs" \
@@ -96,7 +98,7 @@ else
 fi
 
 # --- Sully (ASM) ---
-echo -e "\n${YELLOW}=== Sully (ASM) — PDF count == 13 ===${NC}"
+echo -e "\n${YELLOW}=== Sully (ASM) — count == 11, no Sully_-1 ===${NC}"
 if [ -x "$OUT_ASM/sully" ]; then
     cd "$OUT_ASM"
     rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4
@@ -106,10 +108,12 @@ if [ -x "$OUT_ASM/sully" ]; then
     gcc -no-pie Sully.o -o Sully 2>/dev/null
     ./Sully > /dev/null 2>&1
     COUNT=$(ls -1 | grep -E '^Sully(\.|$|_)' | grep -v '^Sully\.s$' | grep -v '^sully$' | wc -l)
-    if [ "$COUNT" = "13" ]; then
-        pass "Sully (ASM) count == 13"
+    if [ -f "Sully_-1.s" ]; then
+        fail "Sully (ASM): Sully_-1.s must NOT exist"
+    elif [ "$COUNT" = "11" ]; then
+        pass "Sully (ASM) count == 11"
     else
-        fail "Sully (ASM) count = $COUNT (expected 13)"
+        fail "Sully (ASM) count = $COUNT (expected 11)"
     fi
     diff Sully.s Sully_0.s | grep -q ';i=5' && diff Sully.s Sully_0.s | grep -q ';i=0' \
         && pass "Sully.s vs Sully_0.s: only ';i=' differs" \
