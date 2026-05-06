@@ -78,7 +78,8 @@ if [ -x "$OUT_C/Sully" ]; then
     cd "$OUT_C" && rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5
     ./Sully > /dev/null 2>&1
     # PDF-style chain starts from Sully_5 and stops at Sully_0.
-    # 1 (Sully) + 6 .c (Sully_5..0) + 6 binaries = 13. Sully.c excluded as source mirror.
+    # 1 (Sully) + 6 .c (Sully_5..0) + 6 binaries = 13.
+    # Sully.c is a source mirror, not part of the generated chain.
     COUNT=$(ls -1 | grep -E '^Sully(\.|$|_)' | grep -v '^Sully\.c$' | wc -l)
     if [ -f "Sully_-1.c" ]; then
         fail "Sully (C): Sully_-1.c must NOT exist"
@@ -87,10 +88,10 @@ if [ -x "$OUT_C/Sully" ]; then
     else
         fail "Sully (C) count = $COUNT (expected 13)"
     fi
-    diff Sully.c Sully_0.c | grep -q 'int i = 5' && diff Sully.c Sully_0.c | grep -q 'int i = 0' \
+    diff Sully.c Sully_0.c | grep -Eq 'int[[:space:]]+i = 5' && diff Sully.c Sully_0.c | grep -Eq 'int[[:space:]]+i = 0' \
         && pass "Sully.c vs Sully_0.c: only 'int i' differs" \
         || fail "Sully.c vs Sully_0.c diff line"
-    diff Sully_3.c Sully_2.c | grep -q 'int i = 3' && diff Sully_3.c Sully_2.c | grep -q 'int i = 2' \
+    diff Sully_3.c Sully_2.c | grep -Eq 'int[[:space:]]+i = 3' && diff Sully_3.c Sully_2.c | grep -Eq 'int[[:space:]]+i = 2' \
         && pass "Sully_3.c vs Sully_2.c: only 'int i' differs" \
         || fail "Sully_3.c vs Sully_2.c diff line"
 else
@@ -107,7 +108,7 @@ if [ -x "$OUT_ASM/sully" ]; then
     nasm -f elf64 Sully.s -o Sully.o 2>/dev/null
     gcc -no-pie Sully.o -o Sully 2>/dev/null
     ./Sully > /dev/null 2>&1
-    COUNT=$(ls -1 | grep -E '^Sully(\.|$|_)' | grep -v '^Sully\.s$' | grep -v '^sully$' | wc -l)
+    COUNT=$(ls -1 | grep -E '^Sully(\.|$|_)' | grep -v '^Sully\.s$' | grep -v '^Sully\.o$' | grep -v '^sully$' | wc -l)
     if [ -f "Sully_-1.s" ]; then
         fail "Sully (ASM): Sully_-1.s must NOT exist"
     elif [ "$COUNT" = "13" ]; then

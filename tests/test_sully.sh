@@ -3,11 +3,11 @@
 # test_sully.sh - Sully Quine Detail Tests
 # ============================================================================
 # PDF spec (X >= 0 enforced strictly: no Sully_-1 artifacts):
-#   counter starts at 5 (int i = 5; / ;i=5)
+#   counter starts at 5 (int i = 5; inside main / ;i=5)
 #   ./Sully creates chain: Sully_5 → Sully_4 → ... → Sully_0, then stops
 #   ls -al | grep Sully | wc -l == 13  (Sully + Sully_5..0 with .c/.s + binary)
-#   diff Sully.c Sully_0.c     → only 'int i = 5'/'int i = 0' line differs
-#   diff Sully_3.c Sully_2.c   → only 'int i = 3'/'int i = 2' line differs
+#   diff Sully.c Sully_0.c     → only main's 'int i = 5'/'int i = 0' line differs
+#   diff Sully_3.c Sully_2.c   → only main's 'int i = 3'/'int i = 2' line differs
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -92,10 +92,10 @@ echo -e "${YELLOW}[TEST 4] Sully (C) - diff Sully.c Sully_0.c → only 'int i' d
 if [ -x "$OUT_C/Sully" ] && [ -f "$OUT_C/Sully_0.c" ]; then
 	cd "$OUT_C"
 	DIFF_OUT=$(diff Sully.c Sully_0.c)
-	if echo "$DIFF_OUT" | grep -q "int i = 5" && echo "$DIFF_OUT" | grep -q "int i = 0"; then
-		# Verify only 1 line differs (1c1)
-		if echo "$DIFF_OUT" | grep -q "^1c1$"; then
-			echo -e "${GREEN}✓ PASS: only line 1 differs (PDF format)${NC}"
+	if echo "$DIFF_OUT" | grep -Eq "int[[:space:]]+i = 5" && echo "$DIFF_OUT" | grep -Eq "int[[:space:]]+i = 0"; then
+		# Verify only one source line differs: the counter line inside main.
+		if [ "$(echo "$DIFF_OUT" | grep -Ec '^[0-9]+c[0-9]+$')" = "1" ]; then
+			echo -e "${GREEN}✓ PASS: only main's counter line differs${NC}"
 			PASS=$((PASS+1))
 		else
 			echo -e "${RED}✗ FAIL: more than 1 line differs${NC}"
@@ -114,7 +114,7 @@ echo -e "${YELLOW}[TEST 5] Sully (C) - diff Sully_3.c Sully_2.c → only 'int i'
 if [ -f "$OUT_C/Sully_3.c" ] && [ -f "$OUT_C/Sully_2.c" ]; then
 	cd "$OUT_C"
 	DIFF_OUT=$(diff Sully_3.c Sully_2.c)
-	if echo "$DIFF_OUT" | grep -q "int i = 3" && echo "$DIFF_OUT" | grep -q "int i = 2"; then
+	if echo "$DIFF_OUT" | grep -Eq "int[[:space:]]+i = 3" && echo "$DIFF_OUT" | grep -Eq "int[[:space:]]+i = 2"; then
 		echo -e "${GREEN}✓ PASS${NC}"
 		PASS=$((PASS+1))
 	else
@@ -137,7 +137,7 @@ if [ -x "$OUT_ASM/sully" ]; then
 	gcc -no-pie Sully.o -o Sully 2>/dev/null
 	./Sully > /dev/null 2>&1
 	# Exclude Sully.s and the lowercase 'sully' (build artifact)
-	COUNT=$(ls -1 | grep -E '^Sully(\.|$|_)' | grep -v '^Sully\.s$' | wc -l)
+	COUNT=$(ls -1 | grep -E '^Sully(\.|$|_)' | grep -v '^Sully\.s$' | grep -v '^Sully\.o$' | wc -l)
 	if [ -f "Sully_-1.s" ]; then
 		echo -e "${RED}✗ FAIL: Sully_-1.s must NOT exist${NC}"
 		FAIL=$((FAIL+1))
