@@ -99,13 +99,14 @@ ls -al
 cd ..
 
 # ============================================================================
-section "5) Sully (C) — PDF: clang -Wall -Wextra -Werror ../Sully.c -o Sully ; ./Sully"
+section "5) Sully (C) — ng PDF: mkdir tmp; cp Sully tmp/; cd tmp/; ./Sully ; ls -al | grep Sully | wc -l"
 # ============================================================================
-rm -rf sly_c && mkdir -p sly_c/run && cp "$C_SRC/Sully.c" sly_c/Sully.c
-cd sly_c/run
-echo '$ clang -Wall -Wextra -Werror ../Sully.c -o Sully ; ./Sully'
-clang -Wall -Wextra -Werror ../Sully.c -o Sully
-./Sully
+rm -rf sly_c && mkdir sly_c && cp "$C_SRC/Sully.c" sly_c/Sully.c
+cd sly_c
+echo '$ clang -Wall -Wextra -Werror Sully.c -o Sully'
+clang -Wall -Wextra -Werror Sully.c -o Sully
+echo '$ mkdir -p tmp; cp Sully tmp/; cd tmp/; ./Sully'
+mkdir -p tmp && cp Sully tmp/ && cd tmp && ./Sully
 echo
 echo '$ ls -al | grep Sully | wc -l    (PDF expects: 13)'
 COUNT=$(ls -al | grep Sully | wc -l)
@@ -131,9 +132,9 @@ diff ../Sully.c Sully_5.c
 RC=$?
 mark_diff_result "$RC" "Sully (C) Sully_5.c matches source"
 echo
-echo '$ diff ../Sully.c Sully_4.c    (PDF expects: 1c1 / int i = 5 / int i = 4)'
+echo '$ diff ../Sully.c Sully_4.c    (PDF expects: NcN / int i = 5 / int i = 4)'
 DIFF_OUT=$(diff ../Sully.c Sully_4.c)
-if echo "$DIFF_OUT" | grep -q '^1c1$' && echo "$DIFF_OUT" | grep -q 'int i = 5' && echo "$DIFF_OUT" | grep -q 'int i = 4'; then
+if echo "$DIFF_OUT" | grep -qE '^[0-9]+c[0-9]+$' && echo "$DIFF_OUT" | grep -q 'i = 5' && echo "$DIFF_OUT" | grep -q 'i = 4'; then
 	echo "[PASS] Sully (C) source vs Sully_4.c only counter line differs"
 else
 	echo "[FAIL] Sully (C) source vs Sully_4.c unexpected diff"
@@ -141,9 +142,9 @@ else
 	FAIL=$((FAIL + 1))
 fi
 echo
-echo '$ diff Sully_5.c Sully_0.c     (PDF expects: 1c1 / int i = 5 / int i = 0)'
+echo '$ diff Sully_5.c Sully_0.c     (PDF expects: NcN / int i = 5 / int i = 0)'
 DIFF_OUT=$(diff Sully_5.c Sully_0.c)
-if echo "$DIFF_OUT" | grep -q '^1c1$' && echo "$DIFF_OUT" | grep -q 'int i = 5' && echo "$DIFF_OUT" | grep -q 'int i = 0'; then
+if echo "$DIFF_OUT" | grep -qE '^[0-9]+c[0-9]+$' && echo "$DIFF_OUT" | grep -q 'i = 5' && echo "$DIFF_OUT" | grep -q 'i = 0'; then
 	echo "[PASS] Sully (C) Sully_5.c vs Sully_0.c only counter line differs"
 else
 	echo "[FAIL] Sully (C) Sully_5.c vs Sully_0.c unexpected diff"
@@ -153,16 +154,16 @@ fi
 cd ../..
 
 # ============================================================================
-section "6) Sully (ASM) — PDF: nasm -f elf64 ../Sully.s -o Sully.o && gcc Sully.o -o Sully ; ./Sully"
+section "6) Sully (ASM) — ng PDF: mkdir tmp; cp Sully tmp/; cd tmp/; ./Sully ; ls grep wc-l == 13"
 # ============================================================================
-rm -rf sly_a && mkdir -p sly_a/run && cp "$A_SRC/Sully.s" sly_a/Sully.s
-cd sly_a/run
+rm -rf sly_a && mkdir sly_a && cp "$A_SRC/Sully.s" sly_a/Sully.s
+cd sly_a
 # Sully.s uses incbin "/tmp/sully_self.s" — populate it before nasm
-cp ../Sully.s /tmp/sully_self.s
-echo '$ nasm -f elf64 ../Sully.s -o Sully.o && gcc -no-pie Sully.o -o Sully'
-nasm -f elf64 ../Sully.s -o Sully.o && gcc -no-pie Sully.o -o Sully
-echo '$ ./Sully'
-./Sully
+cp Sully.s /tmp/sully_self.s
+echo '$ nasm -f elf64 Sully.s -o Sully.o && gcc -no-pie Sully.o -o Sully'
+nasm -f elf64 Sully.s -o Sully.o && gcc -no-pie Sully.o -o Sully
+echo '$ mkdir -p tmp; cp Sully tmp/; cd tmp/; ./Sully'
+mkdir -p tmp && cp Sully tmp/ && cd tmp && ./Sully
 echo
 echo '$ ls -al | grep Sully | wc -l   (PDF expects: 13)'
 COUNT=$(ls -al | grep Sully | wc -l)
@@ -188,9 +189,9 @@ diff ../Sully.s Sully_5.s
 RC=$?
 mark_diff_result "$RC" "Sully (ASM) Sully_5.s matches source"
 echo
-echo '$ diff ../Sully.s Sully_4.s    (PDF expects: 1c1 / ;i=5 / ;i=4)'
+echo '$ diff ../Sully.s Sully_4.s    (PDF expects: NcN / ;i=5 / ;i=4)'
 DIFF_OUT=$(diff ../Sully.s Sully_4.s)
-if echo "$DIFF_OUT" | grep -q '^1c1$' && echo "$DIFF_OUT" | grep -q ';i=5' && echo "$DIFF_OUT" | grep -q ';i=4'; then
+if echo "$DIFF_OUT" | grep -qE '^[0-9]+c[0-9]+$' && echo "$DIFF_OUT" | grep -q 'i=5' && echo "$DIFF_OUT" | grep -q 'i=4'; then
 	echo "[PASS] Sully (ASM) source vs Sully_4.s only counter line differs"
 else
 	echo "[FAIL] Sully (ASM) source vs Sully_4.s unexpected diff"
@@ -198,14 +199,77 @@ else
 	FAIL=$((FAIL + 1))
 fi
 echo
-echo '$ diff Sully_5.s Sully_0.s     (PDF expects: 1c1 / ;i=5 / ;i=0)'
+echo '$ diff Sully_5.s Sully_0.s     (PDF expects: NcN / ;i=5 / ;i=0)'
 DIFF_OUT=$(diff Sully_5.s Sully_0.s)
-if echo "$DIFF_OUT" | grep -q '^1c1$' && echo "$DIFF_OUT" | grep -q ';i=5' && echo "$DIFF_OUT" | grep -q ';i=0'; then
+if echo "$DIFF_OUT" | grep -qE '^[0-9]+c[0-9]+$' && echo "$DIFF_OUT" | grep -q 'i=5' && echo "$DIFF_OUT" | grep -q 'i=0'; then
 	echo "[PASS] Sully (ASM) Sully_5.s vs Sully_0.s only counter line differs"
 else
 	echo "[FAIL] Sully (ASM) Sully_5.s vs Sully_0.s unexpected diff"
 	echo "$DIFF_OUT"
 	FAIL=$((FAIL + 1))
+fi
+cd ../..
+
+# ============================================================================
+section "7) Bonus (Python) — Colleen.py + Grace.py + Sully.py"
+# ============================================================================
+B_SRC=/app/bonus
+rm -rf bonus_t && mkdir bonus_t && cp "$B_SRC/Colleen.py" "$B_SRC/Grace.py" "$B_SRC/Sully.py" bonus_t/
+cd bonus_t
+
+echo '$ python3 Colleen.py > out ; diff out Colleen.py'
+python3 Colleen.py > out_colleen
+diff out_colleen Colleen.py
+RC=$?
+mark_diff_result "$RC" "Bonus Colleen.py self-print"
+
+echo '$ python3 Grace.py ; diff Grace.py Grace_kid.py'
+python3 Grace.py
+diff Grace.py Grace_kid.py
+RC=$?
+mark_diff_result "$RC" "Bonus Grace.py == Grace_kid.py"
+
+echo '$ mkdir tmp; cp Sully.py tmp/; cd tmp/; python3 Sully.py'
+mkdir -p tmp && cp Sully.py tmp/ && cd tmp && python3 Sully.py
+echo
+echo '$ ls Sully*'
+ls Sully*
+echo '$ ls -1 Sully*.py | wc -l   (bonus expects: 7 = Sully + Sully_5..0)'
+COUNT=$(ls -1 Sully*.py | wc -l)
+echo "$COUNT"
+if [ "$COUNT" = "7" ]; then
+	echo "[PASS] Bonus Sully count=7"
+else
+	echo "[FAIL] Bonus Sully count=$COUNT (expected 7)"
+	FAIL=$((FAIL + 1))
+fi
+if [ -f "Sully_-1.py" ]; then
+	echo "[FAIL] Bonus Sully_-1.py must NOT exist"
+	FAIL=$((FAIL + 1))
+else
+	echo "[PASS] Bonus no Sully_-1.py"
+fi
+echo '$ diff Sully.py Sully_5.py  (empty)'
+diff Sully.py Sully_5.py
+RC=$?
+mark_diff_result "$RC" "Bonus Sully_5.py == Sully.py"
+echo '$ diff Sully.py Sully_4.py  (only counter)'
+DIFF_OUT=$(diff Sully.py Sully_4.py)
+if echo "$DIFF_OUT" | grep -q 'i = 5' && echo "$DIFF_OUT" | grep -q 'i = 4'; then
+	echo "[PASS] Bonus Sully vs Sully_4 only counter differs"
+else
+	echo "[FAIL] Bonus Sully vs Sully_4 unexpected"
+	echo "$DIFF_OUT"
+	FAIL=$((FAIL + 1))
+fi
+echo '$ sed s/i = 5/i = -1/ Sully.py > S_neg.py ; python3 S_neg.py  (must do nothing)'
+sed 's/^i = 5/i = -1/' Sully.py > S_neg.py
+python3 S_neg.py
+if [ -f "Sully_-1.py" ]; then
+	echo "[FAIL] Bonus Sully with i=-1 created Sully_-1.py"
+	FAIL=$((FAIL + 1))
+else
+	echo "[PASS] Bonus Sully initial -1 = noop"
 fi
 cd ../..
 

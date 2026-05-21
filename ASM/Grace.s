@@ -15,11 +15,8 @@
     syscall
 %endmacro
 
-%macro CLOSE_AND_EXIT 0
+%macro CLOSE_FD 0
     mov rax, 3
-    syscall
-    mov rax, 60
-    xor rdi, rdi
     syscall
 %endmacro
 
@@ -29,8 +26,10 @@ src: incbin "Grace.s"
 srclen: equ $-src
 
 section .text
-global _start
-_start:
+global main
+main:
     OPEN_FILE
     WRITE_SRC
-    CLOSE_AND_EXIT
+    CLOSE_FD
+    xor eax, eax
+    ret

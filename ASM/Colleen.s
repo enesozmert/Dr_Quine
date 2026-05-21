@@ -3,13 +3,12 @@ section .data
 src: incbin "Colleen.s"
 srclen: equ $-src
 section .text
-global _start
-_start:
+global main
+main:
     ; inner comment
     call printer
-    mov rax, 60
-    xor rdi, rdi
-    syscall
+    xor eax, eax
+    ret
 printer:
     mov rax, 1
     mov rdi, 1
