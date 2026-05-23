@@ -128,7 +128,7 @@ echo ""
 
 # ---------------- Sully (ASM) ----------------
 echo -e "${YELLOW}[TEST 6] Sully (ASM) - file count: ls grep Sully wc -l == 13, no Sully_-1${NC}"
-if [ -x "$OUT_ASM/sully" ]; then
+if [ -x "$OUT_ASM/Sully" ]; then
 	cd "$OUT_ASM"
 	rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5
 	cp Sully.s /tmp/sully_self.s 2>/dev/null
@@ -149,12 +149,12 @@ if [ -x "$OUT_ASM/sully" ]; then
 		FAIL=$((FAIL+1))
 	fi
 else
-	echo -e "${YELLOW}⊘ SKIP: $OUT_ASM/sully not found (Linux + NASM required)${NC}"
+	echo -e "${YELLOW}⊘ SKIP: $OUT_ASM/Sully not found (Linux + NASM required)${NC}"
 fi
 echo ""
 
 echo -e "${YELLOW}[TEST 7] Sully (ASM) - diff Sully.s Sully_0.s → only ';i=' differs${NC}"
-if [ -x "$OUT_ASM/sully" ] && [ -f "$OUT_ASM/Sully_0.s" ]; then
+if [ -x "$OUT_ASM/Sully" ] && [ -f "$OUT_ASM/Sully_0.s" ]; then
 	cd "$OUT_ASM"
 	DIFF_OUT=$(diff Sully.s Sully_0.s)
 	if echo "$DIFF_OUT" | grep -q ";i=5" && echo "$DIFF_OUT" | grep -q ";i=0"; then

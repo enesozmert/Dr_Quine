@@ -72,9 +72,9 @@ echo ""
 
 # ---------------- Colleen (ASM) ----------------
 echo -e "${YELLOW}[TEST 4] Colleen (ASM) - byte-identical stdout output${NC}"
-if [ -x "$OUT_ASM/colleen" ]; then
+if [ -x "$OUT_ASM/Colleen" ]; then
 	cd "$OUT_ASM"
-	./colleen > /tmp/colleen_asm_out
+	./Colleen > /tmp/colleen_asm_out
 	if diff -q Colleen.s /tmp/colleen_asm_out > /dev/null 2>&1; then
 		echo -e "${GREEN}✓ PASS: output == Colleen.s${NC}"
 		PASS=$((PASS+1))
@@ -83,7 +83,7 @@ if [ -x "$OUT_ASM/colleen" ]; then
 		FAIL=$((FAIL+1))
 	fi
 else
-	echo -e "${YELLOW}⊘ SKIP: $OUT_ASM/colleen not found (Linux + NASM required)${NC}"
+	echo -e "${YELLOW}⊘ SKIP: $OUT_ASM/Colleen not found (Linux + NASM required)${NC}"
 fi
 echo ""
 

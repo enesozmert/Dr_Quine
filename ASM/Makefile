@@ -3,16 +3,16 @@
 # Top-level layout: C/ and ASM/ folders contain sources + this Makefile
 # Build artifacts -> ../output/ASM/
 # Sully needs /tmp/sully_self.s (incbin) - copied during build.
+# All ASM sources use `global main` + libc start -> link via gcc (PDF spec).
 # ============================================================================
 
 NASM		=	nasm
 NASMFLAGS	=	-f elf64
-LD			=	ld
 CC			=	gcc
 
 OUTDIR		=	../output/ASM
 
-BINS		=	$(OUTDIR)/colleen $(OUTDIR)/grace $(OUTDIR)/sully
+BINS		=	$(OUTDIR)/Colleen $(OUTDIR)/Grace $(OUTDIR)/Sully
 
 .PHONY: all clean fclean re
 
@@ -21,17 +21,16 @@ all: $(BINS)
 $(OUTDIR):
 	mkdir -p $(OUTDIR)
 
-# Colleen, Grace: pure syscalls -> link with ld
-$(OUTDIR)/colleen: Colleen.o | $(OUTDIR)
-	$(LD) -o $@ $^
+# PDF spec command:  nasm -f elf64 X.s -o X.o && gcc X.o -o X
+$(OUTDIR)/Colleen: Colleen.o | $(OUTDIR)
+	$(CC) -no-pie -o $@ $^
 	@cp Colleen.s $(OUTDIR)/Colleen.s
 
-$(OUTDIR)/grace: Grace.o | $(OUTDIR)
-	$(LD) -o $@ $^
+$(OUTDIR)/Grace: Grace.o | $(OUTDIR)
+	$(CC) -no-pie -o $@ $^
 	@cp Grace.s $(OUTDIR)/Grace.s
 
-# Sully: libc via main entry point
-$(OUTDIR)/sully: Sully.o | $(OUTDIR)
+$(OUTDIR)/Sully: Sully.o | $(OUTDIR)
 	$(CC) -no-pie -o $@ $^
 	@cp Sully.s $(OUTDIR)/Sully.s
 

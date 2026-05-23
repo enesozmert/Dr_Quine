@@ -38,14 +38,14 @@ fi
 
 # --- Colleen (ASM) ---
 echo -e "\n${YELLOW}=== Colleen (ASM) ===${NC}"
-if [ -x "$OUT_ASM/colleen" ]; then
+if [ -x "$OUT_ASM/Colleen" ]; then
     cd "$OUT_ASM"
-    ./colleen > /tmp/colleen_out.s
+    ./Colleen > /tmp/colleen_out.s
     diff -q Colleen.s /tmp/colleen_out.s > /dev/null \
         && pass "Colleen.s byte-identical" \
         || fail "Colleen.s diff"
 else
-    fail "$OUT_ASM/colleen not found"
+    fail "$OUT_ASM/Colleen not found"
 fi
 
 # --- Grace (C) ---
@@ -62,14 +62,14 @@ fi
 
 # --- Grace (ASM) ---
 echo -e "\n${YELLOW}=== Grace (ASM) ===${NC}"
-if [ -x "$OUT_ASM/grace" ]; then
+if [ -x "$OUT_ASM/Grace" ]; then
     cd "$OUT_ASM" && rm -f Grace_kid.s
-    ./grace
+    ./Grace
     diff -q Grace.s Grace_kid.s > /dev/null \
         && pass "Grace_kid.s == Grace.s" \
         || fail "Grace_kid.s diff"
 else
-    fail "$OUT_ASM/grace not found"
+    fail "$OUT_ASM/Grace not found"
 fi
 
 # --- Sully (C) ---
@@ -100,7 +100,7 @@ fi
 
 # --- Sully (ASM) ---
 echo -e "\n${YELLOW}=== Sully (ASM) — count == 13, no Sully_-1 ===${NC}"
-if [ -x "$OUT_ASM/sully" ]; then
+if [ -x "$OUT_ASM/Sully" ]; then
     cd "$OUT_ASM"
     rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5
     # PDF: nasm -f elf64 ../Sully.s -o Sully.o && gcc Sully.o -o Sully ; ./Sully
@@ -123,7 +123,7 @@ if [ -x "$OUT_ASM/sully" ]; then
         && pass "Sully_3.s vs Sully_2.s: only ';i=' differs" \
         || fail "Sully_3.s vs Sully_2.s diff line"
 else
-    fail "$OUT_ASM/sully not found"
+    fail "$OUT_ASM/Sully not found"
 fi
 
 echo ""

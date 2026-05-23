@@ -93,9 +93,9 @@ echo ""
 
 # ---------------- Grace (ASM) ----------------
 echo -e "${YELLOW}[TEST 5] Grace (ASM) - creates Grace_kid.s byte-identical to Grace.s${NC}"
-if [ -x "$OUT_ASM/grace" ]; then
+if [ -x "$OUT_ASM/Grace" ]; then
 	cd "$OUT_ASM" && rm -f Grace_kid.s
-	./grace
+	./Grace
 	if [ -f Grace_kid.s ] && diff -q Grace.s Grace_kid.s > /dev/null 2>&1; then
 		echo -e "${GREEN}✓ PASS${NC}"
 		PASS=$((PASS+1))
@@ -104,7 +104,7 @@ if [ -x "$OUT_ASM/grace" ]; then
 		FAIL=$((FAIL+1))
 	fi
 else
-	echo -e "${YELLOW}⊘ SKIP: $OUT_ASM/grace not found (Linux + NASM required)${NC}"
+	echo -e "${YELLOW}⊘ SKIP: $OUT_ASM/Grace not found (Linux + NASM required)${NC}"
 fi
 echo ""
 

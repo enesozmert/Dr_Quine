@@ -96,25 +96,25 @@ else
 	skip "Sully (C) not built"
 fi
 
-if [ -x "$OUT_ASM/colleen" ]; then
-	check_no_crash "Colleen (ASM)" "$OUT_ASM/colleen"
+if [ -x "$OUT_ASM/Colleen" ]; then
+	check_no_crash "Colleen (ASM)" "$OUT_ASM/Colleen"
 else
 	skip "Colleen (ASM) not built"
 fi
 
-if [ -x "$OUT_ASM/grace" ]; then
+if [ -x "$OUT_ASM/Grace" ]; then
 	cd "$OUT_ASM" && rm -f Grace_kid.s
-	check_no_crash "Grace (ASM)" "$OUT_ASM/grace"
+	check_no_crash "Grace (ASM)" "$OUT_ASM/Grace"
 else
 	skip "Grace (ASM) not built"
 fi
 
-if [ -x "$OUT_ASM/sully" ]; then
+if [ -x "$OUT_ASM/Sully" ]; then
 	cd "$OUT_ASM" && rm -f Sully_*.s Sully Sully.o Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5
 	# Need /tmp/sully_self.s for incbin
 	cp "$OUT_ASM/Sully.s" /tmp/sully_self.s 2>/dev/null
 	# Sully ASM needs to be built via make in workdir; just smoke test the binary
-	check_no_crash "Sully (ASM)" "$OUT_ASM/sully"
+	check_no_crash "Sully (ASM)" "$OUT_ASM/Sully"
 else
 	skip "Sully (ASM) not built"
 fi
@@ -141,13 +141,13 @@ if [ -x "$OUT_C/Grace" ]; then
 	run_n_times "Grace (C)" 5 "$OUT_C/Grace"
 fi
 
-if [ -x "$OUT_ASM/colleen" ]; then
-	run_n_times "Colleen (ASM)" 5 "$OUT_ASM/colleen"
+if [ -x "$OUT_ASM/Colleen" ]; then
+	run_n_times "Colleen (ASM)" 5 "$OUT_ASM/Colleen"
 fi
 
-if [ -x "$OUT_ASM/grace" ]; then
+if [ -x "$OUT_ASM/Grace" ]; then
 	cd "$OUT_ASM"
-	run_n_times "Grace (ASM)" 5 "$OUT_ASM/grace"
+	run_n_times "Grace (ASM)" 5 "$OUT_ASM/Grace"
 fi
 echo ""
 
@@ -167,8 +167,8 @@ if [ -x "$OUT_C/Sully" ]; then
 	cd "$OUT_C" && rm -f Sully_*.c Sully_-1 Sully_0 Sully_1 Sully_2 Sully_3 Sully_4 Sully_5
 	check_no_crash "Sully (C) with garbage args" "$OUT_C/Sully" "garbage"
 fi
-if [ -x "$OUT_ASM/colleen" ]; then
-	check_no_crash "Colleen (ASM) with garbage args" "$OUT_ASM/colleen" "z"
+if [ -x "$OUT_ASM/Colleen" ]; then
+	check_no_crash "Colleen (ASM) with garbage args" "$OUT_ASM/Colleen" "z"
 fi
 echo ""
 
@@ -184,8 +184,8 @@ if [ -x "$OUT_C/Grace" ]; then
 	cd "$OUT_C"
 	check_no_crash "Grace (C) under env -i" env -i "$OUT_C/Grace"
 fi
-if [ -x "$OUT_ASM/colleen" ]; then
-	check_no_crash "Colleen (ASM) under env -i" env -i "$OUT_ASM/colleen"
+if [ -x "$OUT_ASM/Colleen" ]; then
+	check_no_crash "Colleen (ASM) under env -i" env -i "$OUT_ASM/Colleen"
 fi
 echo ""
 
@@ -197,8 +197,8 @@ echo -e "${YELLOW}=== 5) Closed stdin ===${NC}"
 if [ -x "$OUT_C/Colleen" ]; then
 	check_no_crash "Colleen (C) with closed stdin" bash -c "'$OUT_C/Colleen' <&-"
 fi
-if [ -x "$OUT_ASM/colleen" ]; then
-	check_no_crash "Colleen (ASM) with closed stdin" bash -c "'$OUT_ASM/colleen' <&-"
+if [ -x "$OUT_ASM/Colleen" ]; then
+	check_no_crash "Colleen (ASM) with closed stdin" bash -c "'$OUT_ASM/Colleen' <&-"
 fi
 echo ""
 
