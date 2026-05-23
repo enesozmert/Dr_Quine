@@ -1,0 +1,243 @@
+root@c2efe88d2096:/app# make test
+═══════════════════════════════════════════════════════
+Building C Quine Programs...
+═══════════════════════════════════════════════════════
+make[1]: Entering directory '/app/C'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/app/C'
+═══════════════════════════════════════════════════════
+Building Assembly Quine Programs...
+═══════════════════════════════════════════════════════
+make[1]: Entering directory '/app/ASM'
+make[1]: Nothing to be done for 'all'.
+make[1]: Leaving directory '/app/ASM'
+═══════════════════════════════════════════════════════
+[✓] All quine programs built successfully
+═══════════════════════════════════════════════════════
+═══════════════════════════════════════════════════════
+Running Test Suite (test_all.sh)...
+═══════════════════════════════════════════════════════
+
+╔════════════════════════════════════════════════════════════════╗
+║           Dr_Quine - Comprehensive Test Suite                  ║
+╚════════════════════════════════════════════════════════════════╝
+
+────────────────────────────────────────────────────────────────
+Running: PDF Spec Tests (test_quines.sh)
+────────────────────────────────────────────────────────────────
+╔════════════════════════════════════════════════════════╗
+║      Dr_Quine PDF Spec Validation (output/ tree)       ║
+╚════════════════════════════════════════════════════════╝
+
+=== Colleen (C) ===
+✓ PASS: Colleen.c byte-identical
+
+=== Colleen (ASM) ===
+/app/tests/test_quines.sh: line 49:   673 Segmentation fault      (core dumped) ./colleen > /tmp/colleen_out.s
+✓ PASS: Colleen.s byte-identical
+
+=== Grace (C) ===
+✓ PASS: Grace_kid.c == Grace.c
+
+=== Grace (ASM) ===
+/app/tests/test_quines.sh: line 73:   679 Segmentation fault      (core dumped) ./grace
+✓ PASS: Grace_kid.s == Grace.s
+
+=== Sully (C) — count == 13, no Sully_-1 ===
+✓ PASS: Sully (C) count == 13
+✓ PASS: Sully.c vs Sully_0.c: only 'int i' differs
+✓ PASS: Sully_3.c vs Sully_2.c: only 'int i' differs
+
+=== Sully (ASM) — count == 13, no Sully_-1 ===
+✓ PASS: Sully (ASM) count == 13
+✓ PASS: Sully.s vs Sully_0.s: only ';i=' differs
+✓ PASS: Sully_3.s vs Sully_2.s: only ';i=' differs
+
+════════════════════════════════════════════════════════
+Passed: 10    Failed: 0
+════════════════════════════════════════════════════════
+✓ PDF Spec Tests (test_quines.sh) PASSED
+
+────────────────────────────────────────────────────────────────
+Running: Colleen Tests
+────────────────────────────────────────────────────────────────
+╔════════════════════════════════════════════════════════╗
+║              Testing Colleen Quine Programs            ║
+╚════════════════════════════════════════════════════════╝
+
+[TEST 1] Colleen (C) - byte-identical stdout output
+✓ PASS: output == Colleen.c
+
+[TEST 2] Colleen (C) - exit code 0
+✓ PASS
+
+[TEST 3] Colleen (C) - non-empty output
+✓ PASS: 267 bytes
+
+[TEST 4] Colleen (ASM) - byte-identical stdout output
+/app/tests/test_colleen.sh: line 87:   829 Segmentation fault      (core dumped) ./colleen > /tmp/colleen_asm_out
+✓ PASS: output == Colleen.s
+
+════════════════════════════════════════════════════════
+Passed: 4    Failed: 0
+════════════════════════════════════════════════════════
+✓ Colleen Tests PASSED
+
+────────────────────────────────────────────────────────────────
+Running: Grace Tests
+────────────────────────────────────────────────────────────────
+╔════════════════════════════════════════════════════════╗
+║              Testing Grace Quine Programs              ║
+╚════════════════════════════════════════════════════════╝
+
+[TEST 1] Grace (C) - creates Grace_kid.c
+✓ PASS
+
+[TEST 2] Grace (C) - Grace_kid.c byte-identical to Grace.c
+✓ PASS
+
+[TEST 3] Grace (C) - reproducibility (run twice → identical)
+✓ PASS: deterministic output
+
+[TEST 4] Grace (C) - exit code 0
+✓ PASS
+
+[TEST 5] Grace (ASM) - creates Grace_kid.s byte-identical to Grace.s
+/app/tests/test_grace.sh: line 108:   846 Segmentation fault      (core dumped) ./grace
+✓ PASS
+
+════════════════════════════════════════════════════════
+Passed: 5    Failed: 0
+════════════════════════════════════════════════════════
+✓ Grace Tests PASSED
+
+────────────────────────────────────────────────────────────────
+Running: Sully Tests
+────────────────────────────────────────────────────────────────
+╔════════════════════════════════════════════════════════╗
+║              Testing Sully Quine Programs              ║
+╚════════════════════════════════════════════════════════╝
+
+[TEST 1] Sully (C) - first child file is Sully_5.c (counter starts at 5)
+✓ PASS: Sully_5.c created
+
+[TEST 2] Sully (C) - full chain: Sully_5 down to Sully_0, no Sully_-1
+✓ PASS: 6 .c files (Sully_5 → Sully_0)
+
+[TEST 3] Sully (C) - file count: ls grep Sully wc -l == 13
+✓ PASS: count == 13
+
+[TEST 4] Sully (C) - diff Sully.c Sully_0.c → only 'int i' differs
+✓ PASS: only main's counter line differs
+
+[TEST 5] Sully (C) - diff Sully_3.c Sully_2.c → only 'int i' differs
+✓ PASS
+
+[TEST 6] Sully (ASM) - file count: ls grep Sully wc -l == 13, no Sully_-1
+✓ PASS: count == 13
+
+[TEST 7] Sully (ASM) - diff Sully.s Sully_0.s → only ';i=' differs
+✓ PASS
+
+════════════════════════════════════════════════════════
+Passed: 7    Failed: 0
+════════════════════════════════════════════════════════
+✓ Sully Tests PASSED
+
+────────────────────────────────────────────────────────────────
+Running: Error Handling Tests
+────────────────────────────────────────────────────────────────
+╔════════════════════════════════════════════════════════╗
+║      Dr_Quine Crash & Error Handling Tests             ║
+║      (PDF §IV: no Segfault, Bus error, double free)    ║
+╚════════════════════════════════════════════════════════╝
+
+=== 1) Normal Execution (no crashes) ===
+✓ PASS: Colleen (C) exited cleanly (code 0, no crash markers)
+✓ PASS: Grace (C) exited cleanly (code 0, no crash markers)
+✓ PASS: Sully (C) exited cleanly (code 0, no crash markers)
+/app/tests/test_errors.sh: line 44:  1057 Segmentation fault      (core dumped) "$@" > /dev/null 2> "$stderr_log"
+✗ FAIL: Colleen (ASM) exited with crash signal (code 139)
+/app/tests/test_errors.sh: line 44:  1061 Segmentation fault      (core dumped) "$@" > /dev/null 2> "$stderr_log"
+✗ FAIL: Grace (ASM) exited with crash signal (code 139)
+✓ PASS: Sully (ASM) exited cleanly (code 0, no crash markers)
+
+=== 2) Repeated Execution (5x consecutive) ===
+✓ PASS: Colleen (C) stable across 5 runs
+✓ PASS: Grace (C) stable across 5 runs
+/app/tests/test_errors.sh: line 131:  1136 Segmentation fault      (core dumped) "$@" > /dev/null 2>&1
+✗ FAIL: Colleen (ASM) failed at iteration 1
+/app/tests/test_errors.sh: line 131:  1138 Segmentation fault      (core dumped) "$@" > /dev/null 2>&1
+✗ FAIL: Grace (ASM) failed at iteration 1
+
+=== 3) Extra/Unexpected Arguments ===
+✓ PASS: Colleen (C) with garbage args exited cleanly (code 0, no crash markers)
+✓ PASS: Grace (C) with garbage args exited cleanly (code 0, no crash markers)
+✓ PASS: Sully (C) with garbage args exited cleanly (code 0, no crash markers)
+/app/tests/test_errors.sh: line 44:  1201 Segmentation fault      (core dumped) "$@" > /dev/null 2> "$stderr_log"
+✗ FAIL: Colleen (ASM) with garbage args exited with crash signal (code 139)
+
+=== 4) Empty Environment (env -i) ===
+✓ PASS: Colleen (C) under env -i exited cleanly (code 0, no crash markers)
+✓ PASS: Grace (C) under env -i exited cleanly (code 0, no crash markers)
+/app/tests/test_errors.sh: line 44:  1212 Segmentation fault      (core dumped) "$@" > /dev/null 2> "$stderr_log"
+✗ FAIL: Colleen (ASM) under env -i exited with crash signal (code 139)
+
+=== 5) Closed stdin ===
+✓ PASS: Colleen (C) with closed stdin exited cleanly (code 0, no crash markers)
+✗ FAIL: Colleen (ASM) with closed stdin exited with crash signal (code 139)
+
+=== 6) Valgrind Memory Safety ===
+⊘ SKIP: valgrind not installed
+
+=== 7) Sully Edge Cases (boundary counters) ===
+⊘ SKIP: Python edge tests (python3 missing)
+
+=== 8) No core dumps generated ===
+✓ PASS: No core dump files in project tree
+
+════════════════════════════════════════════════════════
+Passed: 13    Failed: 7
+════════════════════════════════════════════════════════
+✗ Error Handling Tests FAILED
+
+────────────────────────────────────────────────────────────────
+Running: Python Bonus Tests
+────────────────────────────────────────────────────────────────
+╔════════════════════════════════════════════════════════╗
+║          Testing Python Bonus Implementation          ║
+╚════════════════════════════════════════════════════════╝
+
+Using: Python 3.10.12
+
+[TEST 1] Python Colleen - Stdout Output
+✗ SKIP: quine.py not found
+
+[TEST 2] Python Grace - File Creation
+✗ SKIP: quine.py not found
+
+[TEST 3] Python Grace - Content Verification
+✗ SKIP: quine.py not found
+
+[TEST 4] Python Sully - First Generation (counter=3)
+✗ SKIP: quine.py not found
+
+[TEST 5] Python Sully - Recursive Generation
+✗ SKIP: quine.py not found
+
+[TEST 6] Python Sully - Terminal Condition (counter=0)
+✗ SKIP: quine.py not found
+
+[TEST 7] Python - Exit Codes
+✗ SKIP: quine.py not found
+
+════════════════════════════════════════════════════════
+Passed: 0
+Failed: 0
+════════════════════════════════════════════════════════
+✓ Python Bonus Tests PASSED
+
+╔════════════════════════════════════════════════════════════════╗
+║              ✗ 1 TEST SUITE(S) FAILED                       ║
+╚════════════════════════════════════════════════════════════════╝
+make: *** [Makefile:93: test] Error 1
